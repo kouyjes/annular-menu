@@ -1,0 +1,37 @@
+{
+  "name": "menus",
+  "version": "1.0.0",
+  "description": "circle menu,menu,context menu",
+  "main": "index.js",
+  "scripts": {
+    "build":"rollup -c && uglifyjs dest/menu.js > dest/menu.min.js",
+    "build-css": "scss src/themes/menu.scss > dest/menu.css",
+    "build-all": "npm run build && npm run build-css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kouyjes/menus.git"
+  },
+  "keywords": [
+    "circle",
+    "menu",
+    "menu",
+    "context",
+    "menu"
+  ],
+  "devDependencies": {
+    "rollup": "^0.36.3",
+    "rollup-plugin-scss": "^0.1.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-plugin-uglify": "^1.0.1",
+    "ruby": "^0.6.1",
+    "scss": "^0.2.4"
+  },
+  "author": "kouyjes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kouyjes/menus/issues"
+  },
+  "homepage": "https://github.com/kouyjes/menus#readme"
+}
