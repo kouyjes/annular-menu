@@ -7,7 +7,7 @@ var defaultConstant = {
 };
 interface MenuConfig{
     angle?:number;
-    style?:Function;
+    callback?:Function;
 }
 interface Menu extends MenuConfig{
     name:String;
@@ -64,24 +64,24 @@ class ContextMenu implements ContextMenuOption{
     /**
      * render menu center
      */
-    private renderMenuCenter(){
+    private _renderMenuCenter(){
         var centerSize = this.centerSize;
         var center = util.createSvgElement('circle');
         center.setAttribute('r','' + centerSize);
         center.setAttribute('cx','0');
         center.setAttribute('cy','0');
         center.setAttribute('fill','#ccc');
-        this.contentEl.appendChild(center);
+        return center;
     }
-    private renderMenuRoot(){
-        var svg = util.createSvgElement('svg');
-        svg.setAttribute('class','here-ui-menus');
-        this.el = <SVGElement>svg;
-
+    private _renderContentEl(){
         var contentEl = util.createSvgElement('g');
         contentEl.setAttribute('class','menu-position')
-        this.contentEl = contentEl;
-        svg.appendChild(contentEl);
+        return contentEl;
+    }
+    private _renderRootEl(){
+        var svg = util.createSvgElement('svg');
+        svg.setAttribute('class','here-ui-menus');
+        return svg;
     }
     private renderMenuContent(menu:Menu,offsetAngle:number,baseRadius:number,offsetRadius:number){
 
@@ -95,7 +95,7 @@ class ContextMenu implements ContextMenuOption{
         objectEle.setAttribute('y','' + arcCenterY);
 
 
-        var html = document.createElement('div');
+        var html = util.createElement('div');
         html.className = 'menu-html';
         objectEle.appendChild(html);
 
@@ -104,18 +104,18 @@ class ContextMenu implements ContextMenuOption{
         }else{
             let icon;
             if(menu.icon){
-                icon = document.createElement('div');
+                icon = util.createElement('div');
                 icon.className = 'menu-icon';
                 util.style(icon,{
                     height: '70%'
                 });
             }
 
-            let img = document.createElement('img');
+            let img = util.createElement('img');
             img.src = menu.icon;
             icon.appendChild(img);
 
-            let text = document.createElement('div');
+            let text = util.createElement('div');
             text.className = 'menu-text';
             text.innerText = menu.caption;
             text.style.height = '20%';
@@ -124,8 +124,8 @@ class ContextMenu implements ContextMenuOption{
             html.appendChild(text);
         }
 
-        if(util.isFunction(menu.style)){
-            menu.style.call(undefined,html);
+        if(util.isFunction(menu.callback)){
+            menu.callback.call(undefined,html);
         }
 
 
@@ -196,16 +196,23 @@ class ContextMenu implements ContextMenuOption{
             offsetAngle += angle;
         });
 
-        if(util.isFunction(menuList.style)){
-            menuList.style.call(undefined,pg);
+        if(util.isFunction(menuList.callback)){
+            menuList.callback.call(undefined,pg);
         }
 
         return pg;
     }
     protected render(){
 
-        this.renderMenuRoot();
-        this.renderMenuCenter();
+        var rootEl = this._renderRootEl(),
+            contentEl = this._renderContentEl(),
+            menuCenter = this._renderMenuCenter();
+
+        contentEl.appendChild(menuCenter);
+        rootEl.appendChild(contentEl);
+
+        this.el = rootEl;
+        this.contentEl = contentEl;
 
         var menuList = this.menuList;
         var menus = menuList && menuList.items;
@@ -234,7 +241,7 @@ class ContextMenu implements ContextMenuOption{
                 if(target === this.el){
                     break;
                 }
-                if(target = target.parentElement){
+                if(target = util.parent(target)){
                 }else{
                     break;
                 }
@@ -243,7 +250,7 @@ class ContextMenu implements ContextMenuOption{
     }
     private menuClick(target:HTMLElement){
         var selector = '.menu-items';
-        var elements = Array.prototype.slice.call(target.parentElement.querySelectorAll(selector));
+        var elements = Array.prototype.slice.call(util.parent(target).querySelectorAll(selector));
         elements.forEach((el) => {
             el.setAttribute('hidden','');
         });

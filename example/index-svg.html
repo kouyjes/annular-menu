@@ -39,7 +39,7 @@
                     icon:'./image/icon.png',
                     fontSize:12,
                     level:2,
-                    style: function (el) {
+                    callback: function (el) {
                         el.querySelector('.menu-icon').style.backgroundColor = randomColor();
                     }
                 });
@@ -66,7 +66,7 @@
                 item = {
                     name: 'name_' + i,
                     caption: 'text_' + i,
-                    icon: './image/ai.png',
+                    icon: './image/icon.png',
                     fontSize: 12,
                     level: 0,
                     menuList:{
@@ -94,12 +94,14 @@
 <body onload="init()">
 
 <div class="h-context-menu">
-   <!-- <svg width="500" height="500">
+    <!--<svg width="500" height="500">
         <circle r="50" cx="250" cy="250" fill="#ccc"></circle>
         <g>
             <path d="M300 250L350 250 A100 100 0 0 1 250 350 L250 300A50 50 0 0 0 300 250"></path>
         </g>
-
+        <foreignObject x="50" y="50" width="300" height="100">
+            <div>asdfasd</div>
+        </foreignObject>
     </svg>-->
 </div>
 

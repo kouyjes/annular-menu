@@ -1,12 +1,11 @@
 namespace util{
-    var xhtml = "http://www.w3.org/1999/xhtml";
-
-    var namespaces = {
-        svg: "http://www.w3.org/2000/svg",
-        xhtml: xhtml,
-        xlink: "http://www.w3.org/1999/xlink",
-        xml: "http://www.w3.org/XML/1998/namespace",
-        xmlns: "http://www.w3.org/2000/xmlns/"
+    
+    export var namespaces = {
+        svg: 'http://www.w3.org/2000/svg',
+        xhtml: 'http://www.w3.org/1999/xhtml',
+        xlink: 'http://www.w3.org/1999/xlink',
+        xml: 'http://www.w3.org/XML/1998/namespace',
+        xmlns: 'http://www.w3.org/2000/xmlns/'
     };
     export function isDefined(value){
         return value !== undefined;
@@ -17,9 +16,13 @@ namespace util{
     export function isFunction(fn){
         return typeof fn === 'function';
     }
-    export function createSvgElement(qualifiedName){
+    export function createSvgElement(qualifiedName):SVGElement{
         var namespaceURI = namespaces.svg;
-        return document.createElementNS(namespaceURI,qualifiedName);
+        return <SVGElement>document.createElementNS(namespaceURI,qualifiedName);
+    }
+    export function createElement(qualifiedName):HTMLElement{
+        var el = <HTMLElement>document.createElement(qualifiedName);
+        return el;
     }
     export function style(el:HTMLElement,name:String|Object,value?:String|number){
         var style = el.style;
@@ -36,5 +39,8 @@ namespace util{
             style[name] = value;
         }
     };
+    export function parent(target:HTMLElement){
+        return target.parentElement || target.parentNode;
+    }
 }
 export default util;

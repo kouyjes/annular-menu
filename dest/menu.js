@@ -7,13 +7,12 @@
 
 var util;
 (function (util) {
-    var xhtml = "http://www.w3.org/1999/xhtml";
-    var namespaces = {
-        svg: "http://www.w3.org/2000/svg",
-        xhtml: xhtml,
-        xlink: "http://www.w3.org/1999/xlink",
-        xml: "http://www.w3.org/XML/1998/namespace",
-        xmlns: "http://www.w3.org/2000/xmlns/"
+    util.namespaces = {
+        svg: 'http://www.w3.org/2000/svg',
+        xhtml: 'http://www.w3.org/1999/xhtml',
+        xlink: 'http://www.w3.org/1999/xlink',
+        xml: 'http://www.w3.org/XML/1998/namespace',
+        xmlns: 'http://www.w3.org/2000/xmlns/'
     };
     function isDefined(value) {
         return value !== undefined;
@@ -29,10 +28,15 @@ var util;
     }
     util.isFunction = isFunction;
     function createSvgElement(qualifiedName) {
-        var namespaceURI = namespaces.svg;
+        var namespaceURI = util.namespaces.svg;
         return document.createElementNS(namespaceURI, qualifiedName);
     }
     util.createSvgElement = createSvgElement;
+    function createElement(qualifiedName) {
+        var el = document.createElement(qualifiedName);
+        return el;
+    }
+    util.createElement = createElement;
     function style(el, name, value) {
         var style = el.style;
         if (typeof name === 'object') {
@@ -51,6 +55,10 @@ var util;
     }
     util.style = style;
     
+    function parent(target) {
+        return target.parentElement || target.parentNode;
+    }
+    util.parent = parent;
 })(util || (util = {}));
 var util$1 = util;
 
@@ -91,23 +99,24 @@ var ContextMenu = (function () {
     /**
      * render menu center
      */
-    ContextMenu.prototype.renderMenuCenter = function () {
+    ContextMenu.prototype._renderMenuCenter = function () {
         var centerSize = this.centerSize;
         var center = util$1.createSvgElement('circle');
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
         center.setAttribute('fill', '#ccc');
-        this.contentEl.appendChild(center);
+        return center;
     };
-    ContextMenu.prototype.renderMenuRoot = function () {
-        var svg = util$1.createSvgElement('svg');
-        svg.setAttribute('class', 'here-ui-menus');
-        this.el = svg;
+    ContextMenu.prototype._renderContentEl = function () {
         var contentEl = util$1.createSvgElement('g');
         contentEl.setAttribute('class', 'menu-position');
-        this.contentEl = contentEl;
-        svg.appendChild(contentEl);
+        return contentEl;
+    };
+    ContextMenu.prototype._renderRootEl = function () {
+        var svg = util$1.createSvgElement('svg');
+        svg.setAttribute('class', 'here-ui-menus');
+        return svg;
     };
     ContextMenu.prototype.renderMenuContent = function (menu, offsetAngle, baseRadius, offsetRadius) {
         var tempDeg = offsetAngle;
@@ -117,7 +126,7 @@ var ContextMenu = (function () {
         objectEle.setAttribute('height', '' + offsetRadius);
         objectEle.setAttribute('x', '' + arcCenterX);
         objectEle.setAttribute('y', '' + arcCenterY);
-        var html = document.createElement('div');
+        var html = util$1.createElement('div');
         html.className = 'menu-html';
         objectEle.appendChild(html);
         if (menu.html) {
@@ -126,24 +135,24 @@ var ContextMenu = (function () {
         else {
             var icon = void 0;
             if (menu.icon) {
-                icon = document.createElement('div');
+                icon = util$1.createElement('div');
                 icon.className = 'menu-icon';
                 util$1.style(icon, {
                     height: '70%'
                 });
             }
-            var img = document.createElement('img');
+            var img = util$1.createElement('img');
             img.src = menu.icon;
             icon.appendChild(img);
-            var text = document.createElement('div');
+            var text = util$1.createElement('div');
             text.className = 'menu-text';
             text.innerText = menu.caption;
             text.style.height = '20%';
             html.appendChild(icon);
             html.appendChild(text);
         }
-        if (util$1.isFunction(menu.style)) {
-            menu.style.call(undefined, html);
+        if (util$1.isFunction(menu.callback)) {
+            menu.callback.call(undefined, html);
         }
         return objectEle;
     };
@@ -203,14 +212,17 @@ var ContextMenu = (function () {
             pg.appendChild(arcG);
             offsetAngle += angle;
         });
-        if (util$1.isFunction(menuList.style)) {
-            menuList.style.call(undefined, pg);
+        if (util$1.isFunction(menuList.callback)) {
+            menuList.callback.call(undefined, pg);
         }
         return pg;
     };
     ContextMenu.prototype.render = function () {
-        this.renderMenuRoot();
-        this.renderMenuCenter();
+        var rootEl = this._renderRootEl(), contentEl = this._renderContentEl(), menuCenter = this._renderMenuCenter();
+        contentEl.appendChild(menuCenter);
+        rootEl.appendChild(contentEl);
+        this.el = rootEl;
+        this.contentEl = contentEl;
         var menuList = this.menuList;
         var menus = menuList && menuList.items;
         if (!menus || menus.length === 0) {
@@ -237,7 +249,7 @@ var ContextMenu = (function () {
                 if (target === _this.el) {
                     break;
                 }
-                if (target = target.parentElement) {
+                if (target = util$1.parent(target)) {
                 }
                 else {
                     break;
@@ -247,7 +259,7 @@ var ContextMenu = (function () {
     };
     ContextMenu.prototype.menuClick = function (target) {
         var selector = '.menu-items';
-        var elements = Array.prototype.slice.call(target.parentElement.querySelectorAll(selector));
+        var elements = Array.prototype.slice.call(util$1.parent(target).querySelectorAll(selector));
         elements.forEach(function (el) {
             el.setAttribute('hidden', '');
         });
