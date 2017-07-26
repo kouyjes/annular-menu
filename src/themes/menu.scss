@@ -5,6 +5,11 @@
   .menu-position{
 
   }
+  .menu-items{
+    &[hidden]{
+      display:none;
+    }
+  }
   .menu-html{
     overflow:hidden;
     text-align: center;

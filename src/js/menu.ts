@@ -134,6 +134,7 @@ class ContextMenu implements ContextMenuOption{
         var offsetRadius = menuList.offsetRadius || defaultConstant.offsetRadius;
 
         var pg = util.createSvgElement('g');
+        pg.setAttribute('class','menu-items');
         var menus = menuList.items;
         var offsetAngle = 0;
         menus.forEach((menu) => {
@@ -227,6 +228,15 @@ class ContextMenu implements ContextMenuOption{
         });
     }
     private menuClick(target:HTMLElement){
+        var selector = '.menu-items';
+        var elements = Array.prototype.slice.call(target.parentElement.querySelectorAll(selector));
+        elements.forEach((el) => {
+            el.setAttribute('hidden','');
+        });
+        var menusElement = target.querySelector(selector);
+        if(menusElement){
+            menusElement.removeAttribute('hidden');
+        }
         var menuData = <MenuData>target.__menuData__;
         var currentMenu = menuData.menu;
         var menuList = currentMenu.menuList;

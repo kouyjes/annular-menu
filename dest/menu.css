@@ -2,6 +2,8 @@
   width: 100%;
   height: 100%;
   -webkit-user-select: none; }
+  .here-ui-menus .menu-items[hidden] {
+    display: none; }
   .here-ui-menus .menu-html {
     overflow: hidden;
     text-align: center; }

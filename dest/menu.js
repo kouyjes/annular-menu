@@ -110,6 +110,7 @@ var ContextMenu = (function () {
         if (baseRadius === void 0) { baseRadius = this.centerSize; }
         var offsetRadius = menuList.offsetRadius || defaultConstant.offsetRadius;
         var pg = util$1.createSvgElement('g');
+        pg.setAttribute('class', 'menu-items');
         var menus = menuList.items;
         var offsetAngle = 0;
         menus.forEach(function (menu) {
@@ -193,6 +194,15 @@ var ContextMenu = (function () {
         });
     };
     ContextMenu.prototype.menuClick = function (target) {
+        var selector = '.menu-items';
+        var elements = Array.prototype.slice.call(target.parentElement.querySelectorAll(selector));
+        elements.forEach(function (el) {
+            el.setAttribute('hidden', '');
+        });
+        var menusElement = target.querySelector(selector);
+        if (menusElement) {
+            menusElement.removeAttribute('hidden');
+        }
         var menuData = target.__menuData__;
         var currentMenu = menuData.menu;
         var menuList = currentMenu.menuList;
