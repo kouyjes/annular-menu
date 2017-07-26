@@ -2,18 +2,22 @@ import util from './util';
 var defaultConstant = {
     fontSize:12,
     centerSize:30,
-    offsetRadius:80
+    offsetRadius:80,
+    arcAngle:Math.PI / 3
 };
 interface MenuOption{
     name:String;
     caption:String;
     icon?:String;
+    angle?:number;
     fontSize?:number;
     menuList?:MenuList;
 }
 class Menu implements MenuOption{
     name:String;
     caption:String;
+    angle:number;
+    icon:String;
     menuList:MenuList = {
         items:[]
     };
@@ -29,6 +33,7 @@ class Menu implements MenuOption{
 interface MenuList{
     items:Menu[];
     offsetRadius?:number;
+    angle?:number;
 }
 interface ContextMenuOption{
     el:SVGElement;
@@ -123,22 +128,24 @@ class ContextMenu implements ContextMenuOption{
 
         return objectEle;
     }
-    private renderMenus(menuList:MenuList,angle:number,startDeg:number = 0,baseRadius:number = this.centerSize){
+    private renderMenus(menuList:MenuList,startDeg:number = 0,baseRadius:number = this.centerSize){
 
 
         var offsetRadius = menuList.offsetRadius || defaultConstant.offsetRadius;
 
         var pg = util.createSvgElement('g');
         var menus = menuList.items;
-        menus.forEach((menu,index) => {
+        var offsetAngle = 0;
+        menus.forEach((menu) => {
 
-            var tempDeg = startDeg + angle + index * angle;
+            var angle = menu.angle;
+            var tempDeg = startDeg + angle + offsetAngle;
             var arcG = <SVGElement>(util.createSvgElement('g'));
             arcG.__menuData__ = {
                 menu:menu,
                 angle:angle,
                 radius:baseRadius + offsetRadius,
-                offsetAngle:startDeg + index * angle
+                offsetAngle:startDeg + offsetAngle
             };
             var p = util.createSvgElement('path');
             var paths = [];
@@ -153,7 +160,7 @@ class ContextMenu implements ContextMenuOption{
                 y:-Math.sin(tempDeg) * radius
             };
             paths.push('L' + pointB.x + ' ' + pointB.y);
-            tempDeg = startDeg + angle + (index - 1) * angle;
+            tempDeg = startDeg + offsetAngle;
             var pointC = {
                 x:Math.cos(tempDeg) * radius,
                 y:-Math.sin(tempDeg) * radius
@@ -171,12 +178,15 @@ class ContextMenu implements ContextMenuOption{
 
 
             //create text area
-            var contentAngle = startDeg + index * angle + angle / 2;
+            var contentAngle = startDeg + offsetAngle + angle / 2;
             var menuContent = this.renderMenuContent(menu,contentAngle,baseRadius,offsetRadius)
 
             arcG.appendChild(p);
             arcG.appendChild(menuContent);
             pg.appendChild(arcG);
+
+
+            offsetAngle += angle;
         });
 
         return pg;
@@ -187,8 +197,12 @@ class ContextMenu implements ContextMenuOption{
         this.renderMenuCenter();
 
         var menus = this.menuList.items;
-        var angle = 2 * Math.PI / menus.length;
-        var pg = this.renderMenus(this.menuList,angle);
+        var angle = this.menuList.angle;
+        angle = angle || 2 * Math.PI / menus.length;
+        menus.forEach((menu:Menu) => {
+            menu.angle = menu.angle || angle;
+        });
+        var pg = this.renderMenus(this.menuList);
         this.contentEl.appendChild(pg);
 
         this.bindEvent();
@@ -213,18 +227,22 @@ class ContextMenu implements ContextMenuOption{
         });
     }
     private menuClick(target:HTMLElement){
-        var menuData = target.__menuData__;
+        var menuData = <MenuData>target.__menuData__;
         var currentMenu = menuData.menu;
-        var menus = currentMenu.menuList && currentMenu.menuList.items;
+        var menuList = currentMenu.menuList;
+        var menus = menuList && menuList.items;
         if(!menus || menus.length === 0){
             return;
         }
-        var angle = Math.PI / 3;
+        var angle = menuList.angle || defaultConstant.arcAngle;
+        var totalAngle = 0;
+        menus.forEach((menu:Menu) => {
+            menu.angle = menu.angle || angle;
+            totalAngle += menu.angle;
+        });
+        var startAngle = menuData.offsetAngle - (totalAngle - menuData.angle) / 2;
 
-        var totalAngle = angle * menus.length;
-        var startAngle = menuData.offsetAngle - (Math.abs(totalAngle) - Math.abs(menuData.angle)) / 2;
-
-        var pg = this.renderMenus(currentMenu.menuList,angle,startAngle,menuData.radius);
+        var pg = this.renderMenus(currentMenu.menuList,startAngle,menuData.radius);
         target.appendChild(pg);
     }
 }

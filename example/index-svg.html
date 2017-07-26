@@ -31,8 +31,9 @@
                     level:2
                 });
             }
+            var item;
             for(var i = 0; i < 3; i++){
-                secMenus.push({
+                item = {
                     name:'sec_' + i,
                     caption:'sec_' + i,
                     icon:'./image/icon.png',
@@ -41,10 +42,14 @@
                     menuList:{
                         items:thirMenus
                     }
-                });
+                };
+                secMenus.push(item);
+                if(i === 1){
+                    item.angle = Math.PI / 6;
+                }
             }
             for(var i = 0;i < 5;i++){
-                menus.push({
+                item = {
                     name: 'name_' + i,
                     caption: 'text_' + i,
                     icon: './image/icon.png',
@@ -53,7 +58,11 @@
                     menuList:{
                         items:secMenus
                     }
-                });
+                };
+                menus.push(item);
+                if(i === 0){
+                    item.angle = Math.PI / 2;
+                }
             }
             var contextMenu = new HERE.UI.ContextMenu({
                 menuList:{
