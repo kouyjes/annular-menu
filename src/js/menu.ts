@@ -1,39 +1,25 @@
 import util from './util';
 var defaultConstant = {
-    fontSize:12,
     centerSize:30,
+    radiusStep:0,
     offsetRadius:80,
     arcAngle:Math.PI / 3
 };
-interface MenuOption{
+interface MenuConfig{
+    angle?:number;
+    style?:Function;
+}
+interface Menu extends MenuConfig{
     name:String;
     caption:String;
+    html?:String;
     icon?:String;
-    angle?:number;
-    fontSize?:number;
     menuList?:MenuList;
 }
-class Menu implements MenuOption{
-    name:String;
-    caption:String;
-    angle:number;
-    icon:String;
-    menuList:MenuList = {
-        items:[]
-    };
-    fontSize = defaultConstant.fontSize;
-    constructor(option:MenuOption){
-        if(option.menuList){
-            this.menuList = option.menuList;
-        }
-        this.name = option.name;
-        this.caption = option.caption;
-    }
-}
-interface MenuList{
+interface MenuList extends MenuConfig{
     items:Menu[];
+    radiusStep?:number;
     offsetRadius?:number;
-    angle?:number;
 }
 interface ContextMenuOption{
     el:SVGElement;
@@ -108,30 +94,50 @@ class ContextMenu implements ContextMenuOption{
         objectEle.setAttribute('x','' + arcCenterX);
         objectEle.setAttribute('y','' + arcCenterY);
 
-        var fontSize = menu.fontSize || defaultConstant.fontSize;
-        fontSize = Math.max(Number(fontSize),defaultConstant.fontSize);
+
         var html = document.createElement('div');
         html.className = 'menu-html';
-        var img = document.createElement('img');
-        img.src = 'image/icon.png';
-        img.className = 'menu-icon';
-        img.style.height = (offsetRadius - fontSize) + 'px';
-        var text = document.createElement('div');
-        text.className = 'menu-text';
-        text.innerText = menu.caption;
-        text.style.fontSize = fontSize + 'px';
-        text.style.height = fontSize + 'px';
-        html.appendChild(img);
-        html.appendChild(text);
-
         objectEle.appendChild(html);
+
+        if(menu.html){
+            html.innerHTML = menu.html;
+        }else{
+            let icon;
+            if(menu.icon){
+                icon = document.createElement('div');
+                icon.className = 'menu-icon';
+                util.style(icon,{
+                    height: '70%'
+                });
+            }
+
+            let img = document.createElement('img');
+            img.src = menu.icon;
+            icon.appendChild(img);
+
+            let text = document.createElement('div');
+            text.className = 'menu-text';
+            text.innerText = menu.caption;
+            text.style.height = '20%';
+
+            html.appendChild(icon);
+            html.appendChild(text);
+        }
+
+        if(util.isFunction(menu.style)){
+            menu.style.call(undefined,html);
+        }
+
 
         return objectEle;
     }
     private renderMenus(menuList:MenuList,startDeg:number = 0,baseRadius:number = this.centerSize){
 
 
-        var offsetRadius = menuList.offsetRadius || defaultConstant.offsetRadius;
+        var offsetRadius = util.valueOf(menuList.offsetRadius,defaultConstant.offsetRadius);
+        var radiusStep = util.valueOf(menuList.radiusStep,defaultConstant.radiusStep);
+
+        baseRadius += radiusStep;
 
         var pg = util.createSvgElement('g');
         pg.setAttribute('class','menu-items');
@@ -180,7 +186,7 @@ class ContextMenu implements ContextMenuOption{
 
             //create text area
             var contentAngle = startDeg + offsetAngle + angle / 2;
-            var menuContent = this.renderMenuContent(menu,contentAngle,baseRadius,offsetRadius)
+            var menuContent = this.renderMenuContent(menu,contentAngle,baseRadius,offsetRadius);
 
             arcG.appendChild(p);
             arcG.appendChild(menuContent);
@@ -190,6 +196,10 @@ class ContextMenu implements ContextMenuOption{
             offsetAngle += angle;
         });
 
+        if(util.isFunction(menuList.style)){
+            menuList.style.call(undefined,pg);
+        }
+
         return pg;
     }
     protected render(){
@@ -197,8 +207,12 @@ class ContextMenu implements ContextMenuOption{
         this.renderMenuRoot();
         this.renderMenuCenter();
 
-        var menus = this.menuList.items;
-        var angle = this.menuList.angle;
+        var menuList = this.menuList;
+        var menus = menuList && menuList.items;
+        if(!menus || menus.length === 0){
+            return;
+        }
+        var angle = menuList.angle;
         angle = angle || 2 * Math.PI / menus.length;
         menus.forEach((menu:Menu) => {
             menu.angle = menu.angle || angle;
@@ -236,6 +250,7 @@ class ContextMenu implements ContextMenuOption{
         var menusElement = target.querySelector(selector);
         if(menusElement){
             menusElement.removeAttribute('hidden');
+            return;
         }
         var menuData = <MenuData>target.__menuData__;
         var currentMenu = menuData.menu;

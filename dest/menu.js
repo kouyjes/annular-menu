@@ -15,17 +15,48 @@ var util;
         xml: "http://www.w3.org/XML/1998/namespace",
         xmlns: "http://www.w3.org/2000/xmlns/"
     };
+    function isDefined(value) {
+        return value !== undefined;
+    }
+    util.isDefined = isDefined;
+    function valueOf(value, defaultValue) {
+        if (defaultValue === void 0) { defaultValue = value; }
+        return isDefined(value) ? value : defaultValue;
+    }
+    util.valueOf = valueOf;
+    function isFunction(fn) {
+        return typeof fn === 'function';
+    }
+    util.isFunction = isFunction;
     function createSvgElement(qualifiedName) {
         var namespaceURI = namespaces.svg;
         return document.createElementNS(namespaceURI, qualifiedName);
     }
     util.createSvgElement = createSvgElement;
+    function style(el, name, value) {
+        var style = el.style;
+        if (typeof name === 'object') {
+            Object.keys(name).forEach(function (key) {
+                if (key in style) {
+                    style[key] = name[key];
+                }
+            });
+        }
+        else if (typeof name === 'string') {
+            if (value === undefined) {
+                return style[name];
+            }
+            style[name] = value;
+        }
+    }
+    util.style = style;
+    
 })(util || (util = {}));
 var util$1 = util;
 
 var defaultConstant = {
-    fontSize: 12,
     centerSize: 30,
+    radiusStep: 0,
     offsetRadius: 80,
     arcAngle: Math.PI / 3
 };
@@ -86,29 +117,43 @@ var ContextMenu = (function () {
         objectEle.setAttribute('height', '' + offsetRadius);
         objectEle.setAttribute('x', '' + arcCenterX);
         objectEle.setAttribute('y', '' + arcCenterY);
-        var fontSize = menu.fontSize || defaultConstant.fontSize;
-        fontSize = Math.max(Number(fontSize), defaultConstant.fontSize);
         var html = document.createElement('div');
         html.className = 'menu-html';
-        var img = document.createElement('img');
-        img.src = 'image/icon.png';
-        img.className = 'menu-icon';
-        img.style.height = (offsetRadius - fontSize) + 'px';
-        var text = document.createElement('div');
-        text.className = 'menu-text';
-        text.innerText = menu.caption;
-        text.style.fontSize = fontSize + 'px';
-        text.style.height = fontSize + 'px';
-        html.appendChild(img);
-        html.appendChild(text);
         objectEle.appendChild(html);
+        if (menu.html) {
+            html.innerHTML = menu.html;
+        }
+        else {
+            var icon = void 0;
+            if (menu.icon) {
+                icon = document.createElement('div');
+                icon.className = 'menu-icon';
+                util$1.style(icon, {
+                    height: '70%'
+                });
+            }
+            var img = document.createElement('img');
+            img.src = menu.icon;
+            icon.appendChild(img);
+            var text = document.createElement('div');
+            text.className = 'menu-text';
+            text.innerText = menu.caption;
+            text.style.height = '20%';
+            html.appendChild(icon);
+            html.appendChild(text);
+        }
+        if (util$1.isFunction(menu.style)) {
+            menu.style.call(undefined, html);
+        }
         return objectEle;
     };
     ContextMenu.prototype.renderMenus = function (menuList, startDeg, baseRadius) {
         var _this = this;
         if (startDeg === void 0) { startDeg = 0; }
         if (baseRadius === void 0) { baseRadius = this.centerSize; }
-        var offsetRadius = menuList.offsetRadius || defaultConstant.offsetRadius;
+        var offsetRadius = util$1.valueOf(menuList.offsetRadius, defaultConstant.offsetRadius);
+        var radiusStep = util$1.valueOf(menuList.radiusStep, defaultConstant.radiusStep);
+        baseRadius += radiusStep;
         var pg = util$1.createSvgElement('g');
         pg.setAttribute('class', 'menu-items');
         var menus = menuList.items;
@@ -158,13 +203,20 @@ var ContextMenu = (function () {
             pg.appendChild(arcG);
             offsetAngle += angle;
         });
+        if (util$1.isFunction(menuList.style)) {
+            menuList.style.call(undefined, pg);
+        }
         return pg;
     };
     ContextMenu.prototype.render = function () {
         this.renderMenuRoot();
         this.renderMenuCenter();
-        var menus = this.menuList.items;
-        var angle = this.menuList.angle;
+        var menuList = this.menuList;
+        var menus = menuList && menuList.items;
+        if (!menus || menus.length === 0) {
+            return;
+        }
+        var angle = menuList.angle;
         angle = angle || 2 * Math.PI / menus.length;
         menus.forEach(function (menu) {
             menu.angle = menu.angle || angle;
@@ -202,6 +254,7 @@ var ContextMenu = (function () {
         var menusElement = target.querySelector(selector);
         if (menusElement) {
             menusElement.removeAttribute('hidden');
+            return;
         }
         var menuData = target.__menuData__;
         var currentMenu = menuData.menu;

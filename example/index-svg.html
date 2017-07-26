@@ -18,6 +18,16 @@
     </style>
     <script src="../dest/menu.js"></script>
     <script>
+        function randomColor(){
+            var rgb = ['rgb('];
+            rgb.push(parseInt(255 * Math.random()));
+            rgb.push(',');
+            rgb.push(parseInt(255 * Math.random()));
+            rgb.push(',');
+            rgb.push(parseInt(255 * Math.random()));
+            rgb.push(')');
+            return rgb.join('');
+        }
         function init(){
             var menus = [];
             var secMenus = [];
@@ -28,7 +38,10 @@
                     caption:'thir_' + i,
                     icon:'./image/icon.png',
                     fontSize:12,
-                    level:2
+                    level:2,
+                    style: function (el) {
+                        el.querySelector('.menu-icon').style.backgroundColor = randomColor();
+                    }
                 });
             }
             var item;
@@ -36,11 +49,12 @@
                 item = {
                     name:'sec_' + i,
                     caption:'sec_' + i,
-                    icon:'./image/icon.png',
+                    icon:'./image/ai.png',
                     fontSize:12,
                     level:1,
                     menuList:{
-                        items:thirMenus
+                        items:thirMenus,
+                        offsetRadius:150
                     }
                 };
                 secMenus.push(item);
@@ -52,10 +66,11 @@
                 item = {
                     name: 'name_' + i,
                     caption: 'text_' + i,
-                    icon: './image/icon.png',
+                    icon: './image/ai.png',
                     fontSize: 12,
                     level: 0,
                     menuList:{
+                        radiusStep:20,
                         items:secMenus
                     }
                 };
