@@ -1,6 +1,6 @@
 declare interface HTMLElement{
-    menu:any;
     addEventListener:Function;
+    __menuData__:Object;
 }
 declare interface SVGElement extends HTMLElement{
 }

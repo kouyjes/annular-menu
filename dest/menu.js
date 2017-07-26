@@ -23,27 +23,29 @@ var util;
 })(util || (util = {}));
 var util$1 = util;
 
-var defaultFontSize = 12;
+var defaultConstant = {
+    fontSize: 12,
+    centerSize: 30,
+    offsetRadius: 80
+};
 var ContextMenu = (function () {
     function ContextMenu(option) {
-        this.config = {
-            centerSize: 30,
-            circleDistance: 80
+        this.menuList = {
+            items: []
         };
-        this.menus = option.menus;
-        this.initConfig(option.config);
+        this.centerSize = defaultConstant.centerSize;
+        this.assignOption(option);
     }
-    ContextMenu.prototype.initConfig = function (config) {
+    ContextMenu.prototype.assignOption = function (option) {
         var _this = this;
-        if (!config) {
+        if (!option) {
             return;
         }
-        Object.keys(config).forEach(function (key) {
-            var value = config[key];
-            if (typeof value !== typeof _this.config[key]) {
-                return;
+        Object.keys(option).forEach(function (key) {
+            var value = option[key];
+            if (typeof value === typeof _this[key]) {
+                _this[key] = value;
             }
-            _this.config[key] = value;
         });
     };
     ContextMenu.prototype.show = function (position, parent) {
@@ -58,7 +60,7 @@ var ContextMenu = (function () {
      * render menu center
      */
     ContextMenu.prototype.renderMenuCenter = function () {
-        var centerSize = this.config.centerSize;
+        var centerSize = this.centerSize;
         var center = util$1.createSvgElement('circle');
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
@@ -75,71 +77,80 @@ var ContextMenu = (function () {
         this.contentEl = contentEl;
         svg.appendChild(contentEl);
     };
-    ContextMenu.prototype.renderMenus = function (menus, deg, diff) {
-        if (!diff) {
-            diff = deg;
-        }
-        var centerSize = this.config.centerSize;
-        var radiusDiff = this.config.circleDistance;
+    ContextMenu.prototype.renderMenuContent = function (menu, offsetAngle, baseRadius, offsetRadius) {
+        var tempDeg = offsetAngle;
+        var arcCenterX = (baseRadius + offsetRadius / 2) * Math.cos(tempDeg) - offsetRadius / 2, arcCenterY = -(baseRadius + offsetRadius / 2) * Math.sin(tempDeg) - offsetRadius / 2;
+        var objectEle = util$1.createSvgElement('foreignObject');
+        objectEle.setAttribute('width', '' + offsetRadius);
+        objectEle.setAttribute('height', '' + offsetRadius);
+        objectEle.setAttribute('x', '' + arcCenterX);
+        objectEle.setAttribute('y', '' + arcCenterY);
+        var fontSize = menu.fontSize || defaultConstant.fontSize;
+        fontSize = Math.max(Number(fontSize), defaultConstant.fontSize);
+        var html = document.createElement('div');
+        html.className = 'menu-html';
+        var img = document.createElement('img');
+        img.src = 'image/icon.png';
+        img.className = 'menu-icon';
+        img.style.height = (offsetRadius - fontSize) + 'px';
+        var text = document.createElement('div');
+        text.className = 'menu-text';
+        text.innerText = menu.caption;
+        text.style.fontSize = fontSize + 'px';
+        text.style.height = fontSize + 'px';
+        html.appendChild(img);
+        html.appendChild(text);
+        objectEle.appendChild(html);
+        return objectEle;
+    };
+    ContextMenu.prototype.renderMenus = function (menuList, angle, startDeg, baseRadius) {
+        var _this = this;
+        if (startDeg === void 0) { startDeg = 0; }
+        if (baseRadius === void 0) { baseRadius = this.centerSize; }
+        var offsetRadius = menuList.offsetRadius || defaultConstant.offsetRadius;
         var pg = util$1.createSvgElement('g');
+        var menus = menuList.items;
         menus.forEach(function (menu, index) {
-            var tempDeg = deg + index * diff;
-            var arcG = util$1.createSvgElement('g');
-            arcG.menu = menu;
-            arcG.diff = index * diff;
+            var tempDeg = startDeg + angle + index * angle;
+            var arcG = (util$1.createSvgElement('g'));
+            arcG.__menuData__ = {
+                menu: menu,
+                angle: angle,
+                radius: baseRadius + offsetRadius,
+                offsetAngle: startDeg + index * angle
+            };
             var p = util$1.createSvgElement('path');
             var paths = [];
             var pointA = {
-                x: Math.cos(tempDeg) * centerSize,
-                y: -Math.sin(tempDeg) * centerSize
+                x: Math.cos(tempDeg) * baseRadius,
+                y: -Math.sin(tempDeg) * baseRadius
             };
             paths.push('M' + pointA.x + ' ' + pointA.y);
-            var radius = centerSize + radiusDiff;
+            var radius = baseRadius + offsetRadius;
             var pointB = {
                 x: Math.cos(tempDeg) * radius,
                 y: -Math.sin(tempDeg) * radius
             };
             paths.push('L' + pointB.x + ' ' + pointB.y);
-            tempDeg = deg + (index - 1) * diff;
+            tempDeg = startDeg + angle + (index - 1) * angle;
             var pointC = {
                 x: Math.cos(tempDeg) * radius,
                 y: -Math.sin(tempDeg) * radius
             };
             paths.push('A' + radius + ' ' + radius + ' 0 0 1 ' + pointC.x + ' ' + pointC.y);
             var pointD = {
-                x: Math.cos(tempDeg) * centerSize,
-                y: -Math.sin(tempDeg) * centerSize
+                x: Math.cos(tempDeg) * baseRadius,
+                y: -Math.sin(tempDeg) * baseRadius
             };
             paths.push('L' + pointD.x + ' ' + pointD.y);
-            paths.push('A' + centerSize + ' ' + centerSize + ' 0 0 0 ' + pointA.x + ' ' + pointA.y);
+            paths.push('A' + baseRadius + ' ' + baseRadius + ' 0 0 0 ' + pointA.x + ' ' + pointA.y);
             p.setAttribute('d', paths.join(''));
             p.setAttribute('stroke', 'blue');
             //create text area
-            tempDeg = index * diff + deg / 2;
-            var arcCenterX = (centerSize + radiusDiff / 2) * Math.cos(tempDeg) - radiusDiff / 2, arcCenterY = -(centerSize + radiusDiff / 2) * Math.sin(tempDeg) - radiusDiff / 2;
-            var objectEle = util$1.createSvgElement('foreignObject');
-            objectEle.setAttribute('width', '' + radiusDiff);
-            objectEle.setAttribute('height', '' + radiusDiff);
-            objectEle.setAttribute('x', '' + arcCenterX);
-            objectEle.setAttribute('y', '' + arcCenterY);
-            var fontSize = menu.fontSize || defaultFontSize;
-            fontSize = Math.max(Number(fontSize), defaultFontSize);
-            var html = document.createElement('div');
-            html.className = 'menu-html';
-            var img = document.createElement('img');
-            img.src = 'image/icon.png';
-            img.className = 'menu-icon';
-            img.style.height = (radiusDiff - fontSize) + 'px';
-            var text = document.createElement('div');
-            text.className = 'menu-text';
-            text.innerText = menu.caption;
-            text.style.fontSize = fontSize + 'px';
-            text.style.height = fontSize + 'px';
-            html.appendChild(img);
-            html.appendChild(text);
-            objectEle.appendChild(html);
+            var contentAngle = startDeg + index * angle + angle / 2;
+            var menuContent = _this.renderMenuContent(menu, contentAngle, baseRadius, offsetRadius);
             arcG.appendChild(p);
-            arcG.appendChild(objectEle);
+            arcG.appendChild(menuContent);
             pg.appendChild(arcG);
         });
         return pg;
@@ -147,8 +158,9 @@ var ContextMenu = (function () {
     ContextMenu.prototype.render = function () {
         this.renderMenuRoot();
         this.renderMenuCenter();
-        var deg = 2 * Math.PI / this.menus.length, diff = deg;
-        var pg = this.renderMenus(this.menus, deg, diff);
+        var menus = this.menuList.items;
+        var angle = 2 * Math.PI / menus.length;
+        var pg = this.renderMenus(this.menuList, angle);
         this.contentEl.appendChild(pg);
         this.bindEvent();
     };
@@ -157,7 +169,7 @@ var ContextMenu = (function () {
         this.el.addEventListener('click', function (e) {
             var target = e.target;
             while (true) {
-                if (target.menu) {
+                if (target.__menuData__) {
                     _this.menuClick(target);
                     break;
                 }
@@ -173,14 +185,17 @@ var ContextMenu = (function () {
         });
     };
     ContextMenu.prototype.menuClick = function (target) {
-        var currentMenu = target.menu;
-        var menus = currentMenu.subMenus;
+        var menuData = target.__menuData__;
+        var currentMenu = menuData.menu;
+        var menus = currentMenu.menuList && currentMenu.menuList.items;
         if (!menus || menus.length === 0) {
             return;
         }
-        var deg = Math.PI / 3, diff = currentMenu.diff;
-        var pg = this.renderMenus(menus, deg, diff);
-        this.contentEl.appendChild(pg);
+        var angle = Math.PI / 3;
+        var totalAngle = angle * menus.length;
+        var startAngle = menuData.offsetAngle - (Math.abs(totalAngle) - Math.abs(menuData.angle)) / 2;
+        var pg = this.renderMenus(currentMenu.menuList, angle, startAngle, menuData.radius);
+        target.appendChild(pg);
     };
     return ContextMenu;
 }());

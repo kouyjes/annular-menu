@@ -20,28 +20,45 @@
     <script>
         function init(){
             var menus = [];
-            for(var i = 0;i < 5;i++){
-                menus.push({
-                    name:'name_' + i,
-                    caption:'text_' + i,
+            var secMenus = [];
+            var thirMenus = [];
+            for(var i = 0; i < 3; i++){
+                thirMenus.push({
+                    name:'thir_' + i,
+                    caption:'thir_' + i,
                     icon:'./image/icon.png',
                     fontSize:12,
-                    subMenus:[
-                        {
-                            caption:'sub',
-                            icon:'./image/icon.png',
-                            fontSize:12
-                        },
-                        {
-                            caption:'sub2',
-                            icon:'./image/icon.png',
-                            fontSize:12
-                        }
-                    ]
+                    level:2
+                });
+            }
+            for(var i = 0; i < 3; i++){
+                secMenus.push({
+                    name:'sec_' + i,
+                    caption:'sec_' + i,
+                    icon:'./image/icon.png',
+                    fontSize:12,
+                    level:1,
+                    menuList:{
+                        items:thirMenus
+                    }
+                });
+            }
+            for(var i = 0;i < 5;i++){
+                menus.push({
+                    name: 'name_' + i,
+                    caption: 'text_' + i,
+                    icon: './image/icon.png',
+                    fontSize: 12,
+                    level: 0,
+                    menuList:{
+                        items:secMenus
+                    }
                 });
             }
             var contextMenu = new HERE.UI.ContextMenu({
-                menus:menus
+                menuList:{
+                    items:menus
+                }
             });
             contextMenu.show({
                 x:500,
