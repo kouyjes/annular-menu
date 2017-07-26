@@ -102,10 +102,10 @@ var ContextMenu = (function () {
     ContextMenu.prototype._renderMenuCenter = function () {
         var centerSize = this.centerSize;
         var center = util$1.createSvgElement('circle');
+        center.setAttribute('class', 'menu-center');
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
-        center.setAttribute('fill', '#ccc');
         return center;
     };
     ContextMenu.prototype._renderContentEl = function () {
@@ -127,7 +127,7 @@ var ContextMenu = (function () {
         objectEle.setAttribute('x', '' + arcCenterX);
         objectEle.setAttribute('y', '' + arcCenterY);
         var html = util$1.createElement('div');
-        html.className = 'menu-html';
+        html.className = 'menu-panel';
         objectEle.appendChild(html);
         if (menu.html) {
             html.innerHTML = menu.html;
@@ -150,9 +150,6 @@ var ContextMenu = (function () {
             text.style.height = '20%';
             html.appendChild(icon);
             html.appendChild(text);
-        }
-        if (util$1.isFunction(menu.callback)) {
-            menu.callback.call(undefined, html);
         }
         return objectEle;
     };
@@ -178,6 +175,7 @@ var ContextMenu = (function () {
                 offsetAngle: startDeg + offsetAngle
             };
             var p = util$1.createSvgElement('path');
+            p.setAttribute('class', 'menu-path');
             var paths = [];
             var pointA = {
                 x: Math.cos(tempDeg) * baseRadius,
@@ -203,12 +201,14 @@ var ContextMenu = (function () {
             paths.push('L' + pointD.x + ' ' + pointD.y);
             paths.push('A' + baseRadius + ' ' + baseRadius + ' 0 0 0 ' + pointA.x + ' ' + pointA.y);
             p.setAttribute('d', paths.join(''));
-            p.setAttribute('stroke', 'blue');
             //create text area
             var contentAngle = startDeg + offsetAngle + angle / 2;
             var menuContent = _this.renderMenuContent(menu, contentAngle, baseRadius, offsetRadius);
             arcG.appendChild(p);
             arcG.appendChild(menuContent);
+            if (util$1.isFunction(menu.callback)) {
+                menu.callback.call(undefined, arcG);
+            }
             pg.appendChild(arcG);
             offsetAngle += angle;
         });

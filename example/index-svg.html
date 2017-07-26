@@ -32,20 +32,21 @@
             var menus = [];
             var secMenus = [];
             var thirMenus = [];
-            for(var i = 0; i < 3; i++){
+            for(var i = 0; i < 6; i++){
                 thirMenus.push({
                     name:'thir_' + i,
                     caption:'thir_' + i,
                     icon:'./image/icon.png',
                     fontSize:12,
                     level:2,
+                    angle:Math.PI / 5,
                     callback: function (el) {
                         el.querySelector('.menu-icon').style.backgroundColor = randomColor();
                     }
                 });
             }
             var item;
-            for(var i = 0; i < 3; i++){
+            for(var i = 0; i < 6; i++){
                 item = {
                     name:'sec_' + i,
                     caption:'sec_' + i,
@@ -62,7 +63,7 @@
                     item.angle = Math.PI / 6;
                 }
             }
-            for(var i = 0;i < 5;i++){
+            for(var i = 0;i < 6;i++){
                 item = {
                     name: 'name_' + i,
                     caption: 'text_' + i,

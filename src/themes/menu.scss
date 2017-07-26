@@ -4,18 +4,46 @@
   width:100%;
   height:100%;
   -webkit-user-select: none;
+  .menu-center{
+    fill:#ccc;
+  }
   .menu-position{
 
   }
+  @keyframes menu-items-enter {
+    from{
+      @include css(transform,scale(0.2));
+      opacity:0;
+    }
+    to{
+      @include css(transform,scale(1));
+      opacity:1;
+    }
+  }
+  @keyframes menu-items-leave {
+    from{
+      @include css(transform,scale(1));
+      opacity:1;
+    }
+    to{
+      @include css(transform,scale(0.2));
+      opacity:0;
+    }
+  }
   .menu-items{
+    @include css(animation,menu-items-enter .6s);
     &[hidden]{
+      @include css(animation,menu-items-leave .6s);
       display:none;
+    }
+    .menu-path{
+      stroke:blue;
     }
   }
   div{
     @include css(box-sizing,border-box);
   }
-  .menu-html{
+  .menu-panel{
     width:100%;
     height:100%;
     overflow:hidden;

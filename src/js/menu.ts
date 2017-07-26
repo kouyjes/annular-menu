@@ -67,10 +67,10 @@ class ContextMenu implements ContextMenuOption{
     private _renderMenuCenter(){
         var centerSize = this.centerSize;
         var center = util.createSvgElement('circle');
+        center.setAttribute('class','menu-center');
         center.setAttribute('r','' + centerSize);
         center.setAttribute('cx','0');
         center.setAttribute('cy','0');
-        center.setAttribute('fill','#ccc');
         return center;
     }
     private _renderContentEl(){
@@ -96,7 +96,7 @@ class ContextMenu implements ContextMenuOption{
 
 
         var html = util.createElement('div');
-        html.className = 'menu-html';
+        html.className = 'menu-panel';
         objectEle.appendChild(html);
 
         if(menu.html){
@@ -124,11 +124,6 @@ class ContextMenu implements ContextMenuOption{
             html.appendChild(text);
         }
 
-        if(util.isFunction(menu.callback)){
-            menu.callback.call(undefined,html);
-        }
-
-
         return objectEle;
     }
     private renderMenus(menuList:MenuList,startDeg:number = 0,baseRadius:number = this.centerSize){
@@ -155,6 +150,7 @@ class ContextMenu implements ContextMenuOption{
                 offsetAngle:startDeg + offsetAngle
             };
             var p = util.createSvgElement('path');
+            p.setAttribute('class','menu-path');
             var paths = [];
             var pointA = {
                 x:Math.cos(tempDeg) * baseRadius,
@@ -181,7 +177,6 @@ class ContextMenu implements ContextMenuOption{
             paths.push('A' + baseRadius + ' ' + baseRadius + ' 0 0 0 ' + pointA.x + ' ' + pointA.y);
 
             p.setAttribute('d',paths.join(''))
-            p.setAttribute('stroke','blue');
 
 
             //create text area
@@ -190,8 +185,12 @@ class ContextMenu implements ContextMenuOption{
 
             arcG.appendChild(p);
             arcG.appendChild(menuContent);
-            pg.appendChild(arcG);
 
+            if(util.isFunction(menu.callback)){
+                menu.callback.call(undefined,arcG);
+            }
+
+            pg.appendChild(arcG);
 
             offsetAngle += angle;
         });
