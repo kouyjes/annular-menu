@@ -126,10 +126,11 @@
                     items:menus_0
                 }
             });
-            contextMenu.show({
+            var element = contextMenu.render({
                 x:centerX,
                 y:centerY
-            },document.querySelector('.h-context-menu'));
+            });
+            document.querySelector('.h-context-menu').appendChild(element);
         }
     </script>
 </head>

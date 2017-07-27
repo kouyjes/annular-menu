@@ -22,7 +22,6 @@ interface MenuList extends MenuConfig{
     offsetRadius?:number;
 }
 interface ContextMenuOption{
-    el:SVGElement;
     menuList:MenuList;
     centerSize?:number;
 }
@@ -31,7 +30,7 @@ interface Point{
     y:number;
 }
 class ContextMenu implements ContextMenuOption{
-    el:SVGElement;
+    _el:SVGElement;
     menuList:MenuList = {
         items:[]
     };
@@ -50,15 +49,6 @@ class ContextMenu implements ContextMenuOption{
                 this[key] = value;
             }
         });
-    }
-    show(position:Point,parent?:HTMLElement){
-        parent = parent || document.body;
-        if(!this.el){
-            this.render();
-            parent.appendChild(this.el);
-        }
-        this.contentEl.setAttribute('transform','translate(' + position.x + ',' + position.y + ')');
-
     }
 
     /**
@@ -197,7 +187,7 @@ class ContextMenu implements ContextMenuOption{
 
         return pg;
     }
-    protected render(){
+    protected render(position:Point):SVGElement{
 
         var rootEl = this._renderRootEl(),
             contentEl = this._renderContentEl(),
@@ -206,8 +196,9 @@ class ContextMenu implements ContextMenuOption{
         contentEl.appendChild(menuCenter);
         rootEl.appendChild(contentEl);
 
-        this.el = rootEl;
+        this._el = rootEl;
         this.contentEl = contentEl;
+        this.contentEl.setAttribute('transform','translate(' + position.x + ',' + position.y + ')');
 
         var menuList = this.menuList;
         var menus = menuList && menuList.items;
@@ -224,13 +215,15 @@ class ContextMenu implements ContextMenuOption{
 
         this.bindEvent();
 
+        return this._el;
+
     }
     private _findMenuTarget(target:HTMLElement){
         while(true){
             if(target.__menuData__){
                 return target;
             }
-            if(target === this.el){
+            if(target === this._el){
                 break;
             }
             if(target = util.parent(target)){
@@ -241,11 +234,17 @@ class ContextMenu implements ContextMenuOption{
         return null;
     }
     private bindEvent(){
-        this.el.addEventListener('mouseover',(e) => {
+        var currentMenuEl;
+        this._el.addEventListener('mouseover',(e) => {
             var target = <HTMLElement>e.target;
             var menuTarget = this._findMenuTarget(target);
+            if(currentMenuEl === menuTarget){
+                return;
+            }
             if(menuTarget){
+                currentMenuEl = menuTarget;
                 this.renderMenu(menuTarget);
+
             }
         });
 
@@ -253,7 +252,7 @@ class ContextMenu implements ContextMenuOption{
     private _findMenuTargetPath(target:HTMLElement){
         var className = 'menu-items';
         var pathElements = [];
-        while((target = util.parent(target)) && target !== this.el){
+        while((target = util.parent(target)) && target !== this._el){
             let classNames = (target.getAttribute('class') || '').split(/\s+/);
             if(classNames.indexOf(className) >= 0){
                 pathElements.unshift(target);
@@ -264,7 +263,7 @@ class ContextMenu implements ContextMenuOption{
     getAllMenuElements(){
         var selector = '.menu-items';
         var slice = Array.prototype.slice;
-        return slice.call(this.el.querySelectorAll(selector));
+        return slice.call(this._el.querySelectorAll(selector));
     }
     private renderMenu(target:HTMLElement, visible:boolean = true){
 
@@ -285,27 +284,31 @@ class ContextMenu implements ContextMenuOption{
             util.toggleVisible(el,true);
         });
 
-        if(target.querySelector('.menu-items')){
-            return;
+        var menuGroupEl:HTMLElement = <HTMLElement>target.querySelector('.menu-items');
+        if(!menuGroupEl){
+            let menuData = <MenuData>target.__menuData__;
+            let currentMenu = menuData.menu;
+            let menuList = currentMenu.menuList;
+            let menus = menuList && menuList.items;
+            if(!menus || menus.length === 0){
+                return;
+            }
+            let angle = menuList.angle || defaultConstant.arcAngle;
+            let totalAngle = 0;
+            menus.forEach((menu:Menu) => {
+                menu.angle = menu.angle || angle;
+                totalAngle += menu.angle;
+            });
+            var startAngle = menuData.offsetAngle - (totalAngle - menuData.angle) / 2;
+
+            menuGroupEl = this.renderMenus(currentMenu.menuList,startAngle,menuData.radius);
+            util.preAppend(target,menuGroupEl);
         }
 
-        var menuData = <MenuData>target.__menuData__;
-        var currentMenu = menuData.menu;
-        var menuList = currentMenu.menuList;
-        var menus = menuList && menuList.items;
-        if(!menus || menus.length === 0){
-            return;
+        if(menuGroupEl){
+            util.toggleVisible(menuGroupEl,true);
         }
-        var angle = menuList.angle || defaultConstant.arcAngle;
-        var totalAngle = 0;
-        menus.forEach((menu:Menu) => {
-            menu.angle = menu.angle || angle;
-            totalAngle += menu.angle;
-        });
-        var startAngle = menuData.offsetAngle - (totalAngle - menuData.angle) / 2;
 
-        var pg = this.renderMenus(currentMenu.menuList,startAngle,menuData.radius);
-        util.preAppend(target,pg);
     }
 }
 export { ContextMenu };
