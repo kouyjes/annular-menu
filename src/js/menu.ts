@@ -143,6 +143,7 @@ class ContextMenu implements ContextMenuOption{
             var angle = menu.angle;
             var tempDeg = startDeg + angle + offsetAngle;
             var arcG = <SVGElement>(util.createSvgElement('g'));
+            arcG.setAttribute('class','menu-path-g');
             arcG.__menuData__ = {
                 menu:menu,
                 angle:angle,
@@ -249,7 +250,8 @@ class ContextMenu implements ContextMenuOption{
     }
     private menuClick(target:HTMLElement){
         var selector = '.menu-items';
-        var elements = Array.prototype.slice.call(util.parent(target).querySelectorAll(selector));
+        var slice = Array.prototype.slice;
+        var elements = slice.call(util.parent(target).querySelectorAll(selector));
         elements.forEach((el) => {
             el.setAttribute('hidden','');
         });

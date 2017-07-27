@@ -3,52 +3,83 @@
 .here-ui-menus{
   width:100%;
   height:100%;
-  -webkit-user-select: none;
-  .menu-center{
-    fill:#ccc;
+  pointer-events: none;
+  div{
+    @include css(box-sizing,border-box);
+  }
+  foreignObject{
+    pointer-events: none;
   }
   .menu-position{
-
+    -webkit-user-select: none;
+    pointer-events: all;
+    color:$fontColor;
+    >.menu-center,>.menu-items{
+      @include css(animation,menu-center-enter .6s);
+    }
+  }
+  @keyframes menu-center-enter {
+    0%{
+      @include css(transform,scale(0.2));
+      opacity:0;
+      color:transparent;
+    }
+    80%{
+      color:initial;
+    }
+    100%{
+      @include css(transform,scale(1));
+      opacity:1;
+      color:initial;
+    }
+  }
+  .menu-center{
+    fill:$centerBgColor;
+    cursor:pointer;
   }
   @keyframes menu-items-enter {
-    from{
-      @include css(transform,scale(0.2));
+    0%{
+      @include css(transform,scale(0.6));
       opacity:0;
+      color:transparent;
     }
-    to{
+    80%{
+      color:initial;
+    }
+    100%{
       @include css(transform,scale(1));
       opacity:1;
-    }
-  }
-  @keyframes menu-items-leave {
-    from{
-      @include css(transform,scale(1));
-      opacity:1;
-    }
-    to{
-      @include css(transform,scale(0.2));
-      opacity:0;
+      color:initial;
     }
   }
   .menu-items{
     @include css(animation,menu-items-enter .6s);
     &[hidden]{
-      @include css(animation,menu-items-leave .6s);
       display:none;
     }
-    .menu-path{
-      stroke:blue;
+
+  }
+  .menu-path-g{
+    &[active]{
+      >.menu-path{
+        fill:$menuBgColor_hover;
+      }
     }
   }
-  div{
-    @include css(box-sizing,border-box);
+  .menu-path{
+    stroke:$borderColor;
+    cursor:pointer;
+    fill:$menuBgColor;
+    &:hover{
+      fill:$menuBgColor_hover;
+    }
   }
   .menu-panel{
     width:100%;
     height:100%;
     overflow:hidden;
     text-align: center;
-    font-size:$defaultFontSize;
+    font-size:$fontSize;
     border-radius: 50%;
   }
   img{
@@ -63,7 +94,6 @@
     }
   }
   .menu-text{
-    color:#fff;
     overflow:hidden;
     text-align:center;
     text-overflow: ellipsis;

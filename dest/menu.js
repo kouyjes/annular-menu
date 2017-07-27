@@ -168,6 +168,7 @@ var ContextMenu = (function () {
             var angle = menu.angle;
             var tempDeg = startDeg + angle + offsetAngle;
             var arcG = (util$1.createSvgElement('g'));
+            arcG.setAttribute('class', 'menu-path-g');
             arcG.__menuData__ = {
                 menu: menu,
                 angle: angle,
@@ -259,7 +260,8 @@ var ContextMenu = (function () {
     };
     ContextMenu.prototype.menuClick = function (target) {
         var selector = '.menu-items';
-        var elements = Array.prototype.slice.call(util$1.parent(target).querySelectorAll(selector));
+        var slice = Array.prototype.slice;
+        var elements = slice.call(util$1.parent(target).querySelectorAll(selector));
         elements.forEach(function (el) {
             el.setAttribute('hidden', '');
         });
