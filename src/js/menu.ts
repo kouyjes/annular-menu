@@ -102,25 +102,21 @@ class ContextMenu implements ContextMenuOption{
         if(menu.html){
             html.innerHTML = menu.html;
         }else{
-            let icon;
+            let icon,img;
             if(menu.icon){
                 icon = util.createElement('div');
                 icon.className = 'menu-icon';
-                util.style(icon,{
-                    height: '70%'
-                });
-            }
 
-            let img = util.createElement('img');
-            img.src = menu.icon;
-            icon.appendChild(img);
+                img = util.createElement('img');
+                img.src = menu.icon;
+                icon.appendChild(img);
+                html.appendChild(icon);
+            }
 
             let text = util.createElement('div');
             text.className = 'menu-text';
             text.innerText = menu.caption;
-            text.style.height = '20%';
 
-            html.appendChild(icon);
             html.appendChild(text);
         }
 
@@ -190,7 +186,6 @@ class ContextMenu implements ContextMenuOption{
             if(util.isFunction(menu.callback)){
                 menu.callback.call(undefined,arcG);
             }
-
             pg.appendChild(arcG);
 
             offsetAngle += angle;
@@ -225,41 +220,75 @@ class ContextMenu implements ContextMenuOption{
             menu.angle = menu.angle || angle;
         });
         var pg = this.renderMenus(this.menuList);
-        this.contentEl.appendChild(pg);
+        util.preAppend(contentEl,pg);
 
         this.bindEvent();
 
     }
+    private _findMenuTarget(target:HTMLElement){
+        while(true){
+            if(target.__menuData__){
+                return target;
+            }
+            if(target === this.el){
+                break;
+            }
+            if(target = util.parent(target)){
+            }else{
+                break;
+            }
+        }
+        return null;
+    }
     private bindEvent(){
-        this.el.addEventListener('click',(e) => {
+        this.el.addEventListener('mouseover',(e) => {
             var target = <HTMLElement>e.target;
-            while(true){
-                if(target.__menuData__){
-                    this.menuClick(target);
-                    break;
-                }
-                if(target === this.el){
-                    break;
-                }
-                if(target = util.parent(target)){
-                }else{
-                    break;
-                }
+            var menuTarget = this._findMenuTarget(target);
+            if(menuTarget){
+                this.renderMenu(menuTarget);
             }
         });
+
     }
-    private menuClick(target:HTMLElement){
+    private _findMenuTargetPath(target:HTMLElement){
+        var className = 'menu-items';
+        var pathElements = [];
+        while((target = util.parent(target)) && target !== this.el){
+            let classNames = (target.getAttribute('class') || '').split(/\s+/);
+            if(classNames.indexOf(className) >= 0){
+                pathElements.unshift(target);
+            }
+        }
+        return pathElements;
+    }
+    getAllMenuElements(){
         var selector = '.menu-items';
         var slice = Array.prototype.slice;
-        var elements = slice.call(util.parent(target).querySelectorAll(selector));
-        elements.forEach((el) => {
-            el.setAttribute('hidden','');
+        return slice.call(this.el.querySelectorAll(selector));
+    }
+    private renderMenu(target:HTMLElement, visible:boolean = true){
+
+        var pathElements = this._findMenuTargetPath(target);
+        this.getAllMenuElements().forEach((el) => {
+            var existIndex = pathElements.indexOf(el);
+            if(existIndex >= 0){
+                util.toggleVisible(el,true);
+                pathElements.splice(existIndex,1);
+                return;
+            }
+            util.toggleVisible(el,false);
         });
-        var menusElement = target.querySelector(selector);
-        if(menusElement){
-            menusElement.removeAttribute('hidden');
+        pathElements.forEach((el,index) => {
+            if(!visible && index === pathElements.length - 1){
+                return;
+            }
+            util.toggleVisible(el,true);
+        });
+
+        if(target.querySelector('.menu-items')){
             return;
         }
+
         var menuData = <MenuData>target.__menuData__;
         var currentMenu = menuData.menu;
         var menuList = currentMenu.menuList;
@@ -276,7 +305,7 @@ class ContextMenu implements ContextMenuOption{
         var startAngle = menuData.offsetAngle - (totalAngle - menuData.angle) / 2;
 
         var pg = this.renderMenus(currentMenu.menuList,startAngle,menuData.radius);
-        target.appendChild(pg);
+        util.preAppend(target,pg);
     }
 }
 export { ContextMenu };

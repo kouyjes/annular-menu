@@ -24,6 +24,25 @@ namespace util{
         var el = <HTMLElement>document.createElement(qualifiedName);
         return el;
     }
+    export function preAppend(parent:HTMLElement,element:HTMLElement){
+        var children = parent.children;
+        if(children.length > 0){
+            parent.insertBefore(element,children[0]);
+        }else{
+            parent.appendChild(element);
+        }
+    }
+    export function toggleVisible(el:HTMLElement,visible?:boolean){
+        var attrName = 'active';
+        if(visible === void 0){
+            visible = typeof el.getAttribute(attrName) !== 'string';
+        }
+        if(visible){
+            el.setAttribute(attrName,'');
+        }else{
+            el.removeAttribute(attrName);
+        }
+    }
     export function style(el:HTMLElement,name:String|Object,value?:String|number){
         var style = el.style;
         if(typeof name === 'object'){
