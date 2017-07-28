@@ -1,6 +1,6 @@
 @import "util";
 @import "constant";
-.here-ui-menus{
+.here-ui-annular-menu{
   width:100%;
   height:100%;
   pointer-events: none;
@@ -10,10 +10,25 @@
   foreignObject{
     pointer-events: none;
   }
+  @keyframes collapse-enter {
+    from{
+      @include css(transform,scale(1));
+    }
+    to{
+      @include css(transform,scale(0));
+    }
+  }
   .menu-position{
     -webkit-user-select: none;
     pointer-events: all;
     color:$fontColor;
+    &[collapse]{
+      >.menu-items{
+        @include css(animation,collapse-enter .6s);
+        @include css(transform,scale(0));
+      }
+
+    }
     >.menu-center,>.menu-items{
       @include css(animation,menu-center-enter .6s);
     }
@@ -38,6 +53,9 @@
   }
   .menu-center{
     fill:$centerBgColor;
+    &:active{
+      fill:$centerBgColor_active;
+    }
     cursor:pointer;
   }
   @keyframes menu-items-enter {
@@ -61,12 +79,17 @@
   .menu-items{
     @include css(animation,menu-items-enter .6s);
     display:none;
-    &[active]{
-      display:initial;
-    }
 
   }
   .menu-path-g{
+    &[active]{
+      >.menu-path{
+        fill:$menuBgColor_hover;
+      }
+      >.menu-items{
+        display:initial;
+      }
+    }
   }
   .menu-path{
     stroke:$borderColor;
@@ -76,7 +99,7 @@
       fill:$menuBgColor_hover;
     }
   }
-  .menu-panel{
+  .menu-content{
     width:100%;
     height:100%;
     overflow:hidden;

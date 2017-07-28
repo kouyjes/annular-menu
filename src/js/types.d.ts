@@ -6,7 +6,6 @@ declare interface MenuData{
 }
 declare interface HTMLElement{
     src:String;
-    contentPanel:SVGElement;
     addEventListener:Function;
     __menuData__:Object;
 }

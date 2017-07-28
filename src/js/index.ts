@@ -1,1 +1,1 @@
-export { ContextMenu } from './menu';
+export { AnnularMenu } from './menu';

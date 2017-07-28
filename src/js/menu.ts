@@ -5,6 +5,17 @@ var defaultConstant = {
     offsetRadius:80,
     arcAngle:Math.PI / 3
 };
+var classNames = {
+    root:'here-ui-annular-menu',
+    position:'menu-position',
+    center:'menu-center',
+    menuPathGroup:'menu-path-g',
+    menuPath:'menu-path',
+    menuContent:'menu-content',
+    menuIcon:'menu-icon',
+    menuText:'menu-text',
+    menuItems:'menu-items'
+};
 interface MenuConfig{
     angle?:number;
     callback?:Function;
@@ -21,25 +32,29 @@ interface MenuList extends MenuConfig{
     radiusStep?:number;
     offsetRadius?:number;
 }
-interface ContextMenuOption{
+interface AnnularMenuOption{
     menuList:MenuList;
     centerSize?:number;
+    collapsible?:boolean;
+    draggable?:boolean;
 }
 interface Point{
     x:number;
     y:number;
 }
-class ContextMenu implements ContextMenuOption{
+class AnnularMenu implements AnnularMenuOption{
     _el:SVGElement;
     menuList:MenuList = {
         items:[]
     };
+    collapsible:boolean = true;
+    draggable:boolean = true;
     centerSize = defaultConstant.centerSize;
     private contentEl;
-    constructor(option:ContextMenuOption){
+    constructor(option:AnnularMenuOption){
         this.assignOption(option);
     }
-    private assignOption(option:ContextMenuOption){
+    private assignOption(option:AnnularMenuOption){
         if(!option){
             return;
         }
@@ -57,7 +72,7 @@ class ContextMenu implements ContextMenuOption{
     private _renderMenuCenter(){
         var centerSize = this.centerSize;
         var center = util.createSvgElement('circle');
-        center.setAttribute('class','menu-center');
+        center.setAttribute('class',classNames.center);
         center.setAttribute('r','' + centerSize);
         center.setAttribute('cx','0');
         center.setAttribute('cy','0');
@@ -65,12 +80,12 @@ class ContextMenu implements ContextMenuOption{
     }
     private _renderContentEl(){
         var contentEl = util.createSvgElement('g');
-        contentEl.setAttribute('class','menu-position')
+        contentEl.setAttribute('class',classNames.position)
         return contentEl;
     }
     private _renderRootEl(){
         var svg = util.createSvgElement('svg');
-        svg.setAttribute('class','here-ui-menus');
+        svg.setAttribute('class',classNames.root);
         return svg;
     }
     private renderMenuContent(menu:Menu,offsetAngle:number,baseRadius:number,offsetRadius:number){
@@ -86,7 +101,7 @@ class ContextMenu implements ContextMenuOption{
 
 
         var html = util.createElement('div');
-        html.className = 'menu-panel';
+        html.className = classNames.menuContent;
         objectEle.appendChild(html);
 
         if(menu.html){
@@ -95,7 +110,7 @@ class ContextMenu implements ContextMenuOption{
             let icon,img;
             if(menu.icon){
                 icon = util.createElement('div');
-                icon.className = 'menu-icon';
+                icon.className = classNames.menuIcon;
 
                 img = util.createElement('img');
                 img.src = menu.icon;
@@ -104,7 +119,7 @@ class ContextMenu implements ContextMenuOption{
             }
 
             let text = util.createElement('div');
-            text.className = 'menu-text';
+            text.className = classNames.menuText;
             text.innerText = menu.caption;
 
             html.appendChild(text);
@@ -121,7 +136,7 @@ class ContextMenu implements ContextMenuOption{
         baseRadius += radiusStep;
 
         var pg = util.createSvgElement('g');
-        pg.setAttribute('class','menu-items');
+        pg.setAttribute('class',classNames.menuItems);
         var menus = menuList.items;
         var offsetAngle = 0;
         menus.forEach((menu) => {
@@ -129,7 +144,7 @@ class ContextMenu implements ContextMenuOption{
             var angle = menu.angle;
             var tempDeg = startDeg + angle + offsetAngle;
             var arcG = <SVGElement>(util.createSvgElement('g'));
-            arcG.setAttribute('class','menu-path-g');
+            arcG.setAttribute('class',classNames.menuPathGroup);
             arcG.__menuData__ = {
                 menu:menu,
                 angle:angle,
@@ -137,7 +152,7 @@ class ContextMenu implements ContextMenuOption{
                 offsetAngle:startDeg + offsetAngle
             };
             var p = util.createSvgElement('path');
-            p.setAttribute('class','menu-path');
+            p.setAttribute('class',classNames.menuPath);
             var paths = [];
             var pointA = {
                 x:Math.cos(tempDeg) * baseRadius,
@@ -218,6 +233,19 @@ class ContextMenu implements ContextMenuOption{
         return this._el;
 
     }
+    toggleCollapse(collapse?:boolean){
+
+        if(collapse === void 0){
+            collapse = !this.contentEl.hasAttribute('collapse');
+        }
+        if(collapse){
+            this.contentEl.setAttribute('collapse','');
+            this.collapseAllSubMenus();
+        }else{
+            this.contentEl.removeAttribute('collapse');
+        }
+
+    }
     private _findMenuTarget(target:HTMLElement){
         while(true){
             if(target.__menuData__){
@@ -234,49 +262,88 @@ class ContextMenu implements ContextMenuOption{
         return null;
     }
     private bindEvent(){
-        var currentMenuEl;
-        this._el.addEventListener('mouseover',(e) => {
-            var target = <HTMLElement>e.target;
-            var menuTarget = this._findMenuTarget(target);
+
+        // bind collapse event
+        if(this.collapsible){
+            this.bindCollapseEvent();
+        }
+
+        if(this.draggable){
+            this.bindDragEvent();
+        }
+
+        // bind mouse over event
+       this.bindHoverEvent();
+
+    }
+    protected bindDragEvent(){
+
+    }
+    protected bindCollapseEvent(){
+        var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
+        circleEl.addEventListener('click', () => {
+            this.toggleCollapse();
+        });
+    }
+    protected bindHoverEvent(){
+        var currentMenuEl,subMenuRenderTimeout;
+        var renderSubMenus = (menuTarget) => {
             if(currentMenuEl === menuTarget){
                 return;
             }
-            if(menuTarget){
+            subMenuRenderTimeout && clearTimeout(subMenuRenderTimeout);
+            subMenuRenderTimeout = setTimeout(() => {
                 currentMenuEl = menuTarget;
-                this.renderMenu(menuTarget);
-
-            }
+                this.renderSubMenus(menuTarget);
+            },30);
+        }
+        this._el.addEventListener('mouseover',(e) => {
+            var target = <HTMLElement>e.target;
+            var menuTarget = this._findMenuTarget(target);
+            renderSubMenus(menuTarget);
         });
-
     }
     private _findMenuTargetPath(target:HTMLElement){
-        var className = 'menu-items';
         var pathElements = [];
-        while((target = util.parent(target)) && target !== this._el){
-            let classNames = (target.getAttribute('class') || '').split(/\s+/);
-            if(classNames.indexOf(className) >= 0){
+        while(target && target !== this._el){
+            if(target.__menuData__){
                 pathElements.unshift(target);
             }
+            target = util.parent(target)
         }
         return pathElements;
     }
-    getAllMenuElements(){
-        var selector = '.menu-items';
+    private _className(className:String,prefix?:String){
+        if(!prefix){
+            return className;
+        }
+        return prefix + '-' + className;
+    }
+    private _selector(className:String,prefix?:String){
+        className = this._className(className,prefix);
+        return '.' + className;
+    }
+    getAllMenuEl(){
+        var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
         return slice.call(this._el.querySelectorAll(selector));
     }
-    private renderMenu(target:HTMLElement, visible:boolean = true){
-
-        var pathElements = this._findMenuTargetPath(target);
-        this.getAllMenuElements().forEach((el) => {
-            var existIndex = pathElements.indexOf(el);
-            if(existIndex >= 0){
-                util.toggleVisible(el,true);
-                pathElements.splice(existIndex,1);
-                return;
-            }
+    private collapseAllSubMenus(){
+        this.getAllMenuEl().forEach((el) => {
             util.toggleVisible(el,false);
         });
+    }
+    private renderSubMenus(target:HTMLElement, visible:boolean = true){
+
+
+        this.collapseAllSubMenus();
+
+        if(!target){
+            return;
+        }
+
+        var menusElSelector = this._selector(classNames.menuItems);
+        var pathElements = this._findMenuTargetPath(target);
         pathElements.forEach((el,index) => {
             if(!visible && index === pathElements.length - 1){
                 return;
@@ -284,7 +351,7 @@ class ContextMenu implements ContextMenuOption{
             util.toggleVisible(el,true);
         });
 
-        var menuGroupEl:HTMLElement = <HTMLElement>target.querySelector('.menu-items');
+        var menuGroupEl:HTMLElement = <HTMLElement>target.querySelector(menusElSelector);
         if(!menuGroupEl){
             let menuData = <MenuData>target.__menuData__;
             let currentMenu = menuData.menu;
@@ -293,7 +360,7 @@ class ContextMenu implements ContextMenuOption{
             if(!menus || menus.length === 0){
                 return;
             }
-            let angle = menuList.angle || defaultConstant.arcAngle;
+            let angle = menuList.angle || currentMenu.angle || defaultConstant.arcAngle;
             let totalAngle = 0;
             menus.forEach((menu:Menu) => {
                 menu.angle = menu.angle || angle;
@@ -311,4 +378,4 @@ class ContextMenu implements ContextMenuOption{
 
     }
 }
-export { ContextMenu };
+export { AnnularMenu };

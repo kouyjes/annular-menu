@@ -91,15 +91,28 @@ var defaultConstant = {
     offsetRadius: 80,
     arcAngle: Math.PI / 3
 };
-var ContextMenu = (function () {
-    function ContextMenu(option) {
+var classNames = {
+    root: 'here-ui-annular-menu',
+    position: 'menu-position',
+    center: 'menu-center',
+    menuPathGroup: 'menu-path-g',
+    menuPath: 'menu-path',
+    menuContent: 'menu-content',
+    menuIcon: 'menu-icon',
+    menuText: 'menu-text',
+    menuItems: 'menu-items'
+};
+var AnnularMenu = (function () {
+    function AnnularMenu(option) {
         this.menuList = {
             items: []
         };
+        this.collapsible = true;
+        this.draggable = true;
         this.centerSize = defaultConstant.centerSize;
         this.assignOption(option);
     }
-    ContextMenu.prototype.assignOption = function (option) {
+    AnnularMenu.prototype.assignOption = function (option) {
         var _this = this;
         if (!option) {
             return;
@@ -114,26 +127,26 @@ var ContextMenu = (function () {
     /**
      * render menu center
      */
-    ContextMenu.prototype._renderMenuCenter = function () {
+    AnnularMenu.prototype._renderMenuCenter = function () {
         var centerSize = this.centerSize;
         var center = util$1.createSvgElement('circle');
-        center.setAttribute('class', 'menu-center');
+        center.setAttribute('class', classNames.center);
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
         return center;
     };
-    ContextMenu.prototype._renderContentEl = function () {
+    AnnularMenu.prototype._renderContentEl = function () {
         var contentEl = util$1.createSvgElement('g');
-        contentEl.setAttribute('class', 'menu-position');
+        contentEl.setAttribute('class', classNames.position);
         return contentEl;
     };
-    ContextMenu.prototype._renderRootEl = function () {
+    AnnularMenu.prototype._renderRootEl = function () {
         var svg = util$1.createSvgElement('svg');
-        svg.setAttribute('class', 'here-ui-menus');
+        svg.setAttribute('class', classNames.root);
         return svg;
     };
-    ContextMenu.prototype.renderMenuContent = function (menu, offsetAngle, baseRadius, offsetRadius) {
+    AnnularMenu.prototype.renderMenuContent = function (menu, offsetAngle, baseRadius, offsetRadius) {
         var tempDeg = offsetAngle;
         var arcCenterX = (baseRadius + offsetRadius / 2) * Math.cos(tempDeg) - offsetRadius / 2, arcCenterY = -(baseRadius + offsetRadius / 2) * Math.sin(tempDeg) - offsetRadius / 2;
         var objectEle = util$1.createSvgElement('foreignObject');
@@ -142,7 +155,7 @@ var ContextMenu = (function () {
         objectEle.setAttribute('x', '' + arcCenterX);
         objectEle.setAttribute('y', '' + arcCenterY);
         var html = util$1.createElement('div');
-        html.className = 'menu-panel';
+        html.className = classNames.menuContent;
         objectEle.appendChild(html);
         if (menu.html) {
             html.innerHTML = menu.html;
@@ -151,20 +164,20 @@ var ContextMenu = (function () {
             var icon = void 0, img = void 0;
             if (menu.icon) {
                 icon = util$1.createElement('div');
-                icon.className = 'menu-icon';
+                icon.className = classNames.menuIcon;
                 img = util$1.createElement('img');
                 img.src = menu.icon;
                 icon.appendChild(img);
                 html.appendChild(icon);
             }
             var text = util$1.createElement('div');
-            text.className = 'menu-text';
+            text.className = classNames.menuText;
             text.innerText = menu.caption;
             html.appendChild(text);
         }
         return objectEle;
     };
-    ContextMenu.prototype.renderMenus = function (menuList, startDeg, baseRadius) {
+    AnnularMenu.prototype.renderMenus = function (menuList, startDeg, baseRadius) {
         var _this = this;
         if (startDeg === void 0) { startDeg = 0; }
         if (baseRadius === void 0) { baseRadius = this.centerSize; }
@@ -172,14 +185,14 @@ var ContextMenu = (function () {
         var radiusStep = util$1.valueOf(menuList.radiusStep, defaultConstant.radiusStep);
         baseRadius += radiusStep;
         var pg = util$1.createSvgElement('g');
-        pg.setAttribute('class', 'menu-items');
+        pg.setAttribute('class', classNames.menuItems);
         var menus = menuList.items;
         var offsetAngle = 0;
         menus.forEach(function (menu) {
             var angle = menu.angle;
             var tempDeg = startDeg + angle + offsetAngle;
             var arcG = (util$1.createSvgElement('g'));
-            arcG.setAttribute('class', 'menu-path-g');
+            arcG.setAttribute('class', classNames.menuPathGroup);
             arcG.__menuData__ = {
                 menu: menu,
                 angle: angle,
@@ -187,7 +200,7 @@ var ContextMenu = (function () {
                 offsetAngle: startDeg + offsetAngle
             };
             var p = util$1.createSvgElement('path');
-            p.setAttribute('class', 'menu-path');
+            p.setAttribute('class', classNames.menuPath);
             var paths = [];
             var pointA = {
                 x: Math.cos(tempDeg) * baseRadius,
@@ -229,7 +242,7 @@ var ContextMenu = (function () {
         }
         return pg;
     };
-    ContextMenu.prototype.render = function (position) {
+    AnnularMenu.prototype.render = function (position) {
         var rootEl = this._renderRootEl(), contentEl = this._renderContentEl(), menuCenter = this._renderMenuCenter();
         contentEl.appendChild(menuCenter);
         rootEl.appendChild(contentEl);
@@ -251,7 +264,19 @@ var ContextMenu = (function () {
         this.bindEvent();
         return this._el;
     };
-    ContextMenu.prototype._findMenuTarget = function (target) {
+    AnnularMenu.prototype.toggleCollapse = function (collapse) {
+        if (collapse === void 0) {
+            collapse = !this.contentEl.hasAttribute('collapse');
+        }
+        if (collapse) {
+            this.contentEl.setAttribute('collapse', '');
+            this.collapseAllSubMenus();
+        }
+        else {
+            this.contentEl.removeAttribute('collapse');
+        }
+    };
+    AnnularMenu.prototype._findMenuTarget = function (target) {
         while (true) {
             if (target.__menuData__) {
                 return target;
@@ -267,56 +292,90 @@ var ContextMenu = (function () {
         }
         return null;
     };
-    ContextMenu.prototype.bindEvent = function () {
+    AnnularMenu.prototype.bindEvent = function () {
+        // bind collapse event
+        if (this.collapsible) {
+            this.bindCollapseEvent();
+        }
+        if (this.draggable) {
+            this.bindDragEvent();
+        }
+        // bind mouse over event
+        this.bindHoverEvent();
+    };
+    AnnularMenu.prototype.bindDragEvent = function () {
+    };
+    AnnularMenu.prototype.bindCollapseEvent = function () {
         var _this = this;
-        var currentMenuEl;
-        this._el.addEventListener('mouseover', function (e) {
-            var target = e.target;
-            var menuTarget = _this._findMenuTarget(target);
+        var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
+        circleEl.addEventListener('click', function () {
+            _this.toggleCollapse();
+        });
+    };
+    AnnularMenu.prototype.bindHoverEvent = function () {
+        var _this = this;
+        var currentMenuEl, subMenuRenderTimeout;
+        var renderSubMenus = function (menuTarget) {
             if (currentMenuEl === menuTarget) {
                 return;
             }
-            if (menuTarget) {
+            subMenuRenderTimeout && clearTimeout(subMenuRenderTimeout);
+            subMenuRenderTimeout = setTimeout(function () {
                 currentMenuEl = menuTarget;
-                _this.renderMenu(menuTarget);
-            }
+                _this.renderSubMenus(menuTarget);
+            }, 30);
+        };
+        this._el.addEventListener('mouseover', function (e) {
+            var target = e.target;
+            var menuTarget = _this._findMenuTarget(target);
+            renderSubMenus(menuTarget);
         });
     };
-    ContextMenu.prototype._findMenuTargetPath = function (target) {
-        var className = 'menu-items';
+    AnnularMenu.prototype._findMenuTargetPath = function (target) {
         var pathElements = [];
-        while ((target = util$1.parent(target)) && target !== this._el) {
-            var classNames = (target.getAttribute('class') || '').split(/\s+/);
-            if (classNames.indexOf(className) >= 0) {
+        while (target && target !== this._el) {
+            if (target.__menuData__) {
                 pathElements.unshift(target);
             }
+            target = util$1.parent(target);
         }
         return pathElements;
     };
-    ContextMenu.prototype.getAllMenuElements = function () {
-        var selector = '.menu-items';
+    AnnularMenu.prototype._className = function (className, prefix) {
+        if (!prefix) {
+            return className;
+        }
+        return prefix + '-' + className;
+    };
+    AnnularMenu.prototype._selector = function (className, prefix) {
+        className = this._className(className, prefix);
+        return '.' + className;
+    };
+    AnnularMenu.prototype.getAllMenuEl = function () {
+        var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
         return slice.call(this._el.querySelectorAll(selector));
     };
-    ContextMenu.prototype.renderMenu = function (target, visible) {
-        if (visible === void 0) { visible = true; }
-        var pathElements = this._findMenuTargetPath(target);
-        this.getAllMenuElements().forEach(function (el) {
-            var existIndex = pathElements.indexOf(el);
-            if (existIndex >= 0) {
-                util$1.toggleVisible(el, true);
-                pathElements.splice(existIndex, 1);
-                return;
-            }
+    AnnularMenu.prototype.collapseAllSubMenus = function () {
+        this.getAllMenuEl().forEach(function (el) {
             util$1.toggleVisible(el, false);
         });
+    };
+    AnnularMenu.prototype.renderSubMenus = function (target, visible) {
+        if (visible === void 0) { visible = true; }
+        this.collapseAllSubMenus();
+        if (!target) {
+            return;
+        }
+        var menusElSelector = this._selector(classNames.menuItems);
+        var pathElements = this._findMenuTargetPath(target);
         pathElements.forEach(function (el, index) {
             if (!visible && index === pathElements.length - 1) {
                 return;
             }
             util$1.toggleVisible(el, true);
         });
-        var menuGroupEl = target.querySelector('.menu-items');
+        var menuGroupEl = target.querySelector(menusElSelector);
         if (!menuGroupEl) {
             var menuData = target.__menuData__;
             var currentMenu = menuData.menu;
@@ -325,7 +384,7 @@ var ContextMenu = (function () {
             if (!menus || menus.length === 0) {
                 return;
             }
-            var angle_1 = menuList.angle || defaultConstant.arcAngle;
+            var angle_1 = menuList.angle || currentMenu.angle || defaultConstant.arcAngle;
             var totalAngle_1 = 0;
             menus.forEach(function (menu) {
                 menu.angle = menu.angle || angle_1;
@@ -339,10 +398,10 @@ var ContextMenu = (function () {
             util$1.toggleVisible(menuGroupEl, true);
         }
     };
-    return ContextMenu;
+    return AnnularMenu;
 }());
 
-exports.ContextMenu = ContextMenu;
+exports.AnnularMenu = AnnularMenu;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

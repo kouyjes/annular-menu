@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="../dest/menu.css"/>
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1"/>
     <style type="text/css">
         body,html{
             width:100%;
@@ -75,7 +76,7 @@
                     icon:'./image/icon.png',
                     fontSize:12,
                     level:2,
-                    angle:Math.PI / 5,
+                    angle:Math.PI / 6,
                     menuList:{
                         items:menus_3,
                         radiusStep:10,
@@ -87,7 +88,7 @@
                 });
             }
             var item;
-            for(var i = 0; i < 6; i++){
+            for(var i = 0; i < 5; i++){
                 item = {
                     name:'sec_' + i,
                     caption:'sec_' + i,
@@ -100,9 +101,6 @@
                     }
                 };
                 menus_1.push(item);
-                if(i === 1){
-                    item.angle = Math.PI / 6;
-                }
             }
             for(var i = 0;i < 6;i++){
                 item = {
@@ -121,7 +119,7 @@
                     //item.angle = Math.PI / 2;
                 }
             }
-            var contextMenu = new HERE.UI.ContextMenu({
+            var contextMenu = new HERE.UI.AnnularMenu({
                 menuList:{
                     items:menus_0
                 }
