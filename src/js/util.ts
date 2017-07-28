@@ -26,21 +26,61 @@ namespace util{
     }
     export function preAppend(parent:HTMLElement,element:HTMLElement){
         var children = parent.children;
-        if(children.length > 0){
+        if(children && children.length > 0){
             parent.insertBefore(element,children[0]);
+        }else if(parent.firstChild){
+            parent.insertBefore(element,parent.firstChild);
         }else{
             parent.appendChild(element);
         }
     }
     export function toggleVisible(el:HTMLElement,visible?:boolean){
-        var attrName = 'active';
+        var className = 'active';
         if(visible === void 0){
-            visible = !isString(el.getAttribute(attrName));
+            visible = !hasClass(el,className);
         }
         if(visible){
-            el.setAttribute(attrName,'');
+            addClass(el,className);
         }else{
-            el.removeAttribute(attrName);
+            removeClass(el,className);
+        }
+    }
+    function getClassNames(el:HTMLElement){
+        var clazz = el.getAttribute('class') || '';
+        var classNames = clazz.split(/\s+/);
+        return classNames;
+    }
+    export function addClass(el:HTMLElement,className:String){
+        className = className.trim();
+        var classNames = getClassNames(el)
+        if(classNames.indexOf(className) >= 0){
+            return;
+        }
+        classNames.push(className);
+        el.setAttribute('class',classNames.join(' '));
+    }
+    export function removeClass(el:HTMLElement,className:String){
+        className = className.trim();
+        var classNames = getClassNames(el);
+        var index = classNames.indexOf(className);
+        if(index >= 0){
+            classNames.splice(index,1);
+        }
+        el.setAttribute('class',classNames.join(' '));
+    }
+    export function hasClass(el:HTMLElement,className:String){
+        className = className.trim();
+        var classNames = getClassNames(el);
+        return classNames.indexOf(className) >= 0;
+    }
+    export function toggleClass(el:HTMLElement,className:String){
+        className = className.trim();
+        var classNames = getClassNames(el);
+        var index = classNames.indexOf(className);
+        if(index >= 0){
+            classNames.splice(index,1);
+        }else{
+            classNames.push(className);
         }
     }
     export function style(el:HTMLElement,name:String|Object,value?:String|number){

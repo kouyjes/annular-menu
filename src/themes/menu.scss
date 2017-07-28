@@ -5,8 +5,8 @@
   height:100%;
   pointer-events: none;
   display:none;
-  &[active]{
-    display: initial;
+  &[active],&.active{
+    display: block;
   }
   div{
     @include css(box-sizing,border-box);
@@ -15,17 +15,25 @@
     pointer-events: none;
   }
   .menu-position{
-    -webkit-user-select: none;
+    @include css(user-select,none);
     pointer-events: all;
     color:$fontColor;
+
     >.menu-items{
-      display:initial !important;
+      display:block !important;
+    }
+
+    &[collapse],&.collapse{
+      >.menu-items{
+        @include css(transform,scale(0));
+      }
+
     }
   }
 
   .menu-center{
     fill:$centerBgColor;
-    &:active{
+    &:active,&.active{
       fill:$centerBgColor_active;
     }
     cursor:pointer;
@@ -36,12 +44,12 @@
   }
 
   .menu-path-g{
-    &[active]{
+    &[active],&.active{
       >.menu-path{
         fill:$menuBgColor_hover;
       }
       >.menu-items{
-        display:initial;
+        display:block;
       }
     }
   }

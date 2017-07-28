@@ -24,10 +24,9 @@
   }
 }
 .menu-position{
-  &[collapse]{
+  &[collapse],&.collapse{
     >.menu-items{
       @include css(animation,collapse-enter .6s);
-      @include css(transform,scale(0));
     }
 
   }
@@ -57,7 +56,7 @@
   }
 }
 .menu-path-g{
-  &[active]{
+  &[active],&.active{
     >.menu-items{
       @include css(animation,menu-items-enter .6s);
     }

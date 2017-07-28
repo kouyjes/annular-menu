@@ -39,7 +39,7 @@ class AnnularMenu implements AnnularMenuOption {
     private _renderMenuCenter() {
         var centerSize = this.centerSize;
         var center = util.createSvgElement('circle');
-        center.setAttribute('class', classNames.center);
+        util.addClass(center,classNames.center);
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
@@ -48,13 +48,13 @@ class AnnularMenu implements AnnularMenuOption {
 
     private _renderContentEl() {
         var contentEl = util.createSvgElement('g');
-        contentEl.setAttribute('class', classNames.position)
+        util.addClass(contentEl,classNames.position);
         return contentEl;
     }
 
     private _renderRootEl() {
         var svg = util.createSvgElement('svg');
-        svg.setAttribute('class', classNames.root);
+        util.addClass(svg,classNames.root);
         util.toggleVisible(svg,true);
         return svg;
     }
@@ -108,7 +108,7 @@ class AnnularMenu implements AnnularMenuOption {
         baseRadius += radiusStep;
 
         var pg = util.createSvgElement('g');
-        pg.setAttribute('class', classNames.menuItems);
+        util.addClass(pg,classNames.menuItems);
         var menus = menuList.items;
         var offsetAngle = 0;
         menus.forEach((menu) => {
@@ -116,7 +116,7 @@ class AnnularMenu implements AnnularMenuOption {
             var angle = menu.angle;
             var tempDeg = startDeg + angle + offsetAngle;
             var arcG = <SVGElement>(util.createSvgElement('g'));
-            arcG.setAttribute('class', classNames.menuPathGroup);
+            util.addClass(arcG,classNames.menuPathGroup);
             arcG.__menuData__ = {
                 menu: menu,
                 angle: angle,
@@ -124,7 +124,7 @@ class AnnularMenu implements AnnularMenuOption {
                 offsetAngle: startDeg + offsetAngle
             };
             var p = util.createSvgElement('path');
-            p.setAttribute('class', classNames.menuPath);
+            util.addClass(p,classNames.menuPath);
             var paths = [];
             var pointA = {
                 x: Math.cos(tempDeg) * baseRadius,
@@ -256,15 +256,16 @@ class AnnularMenu implements AnnularMenuOption {
 
     toggleCollapse(collapse?:boolean) {
 
-        var attrName = 'collapse';
+        var className = 'collapse';
+
         if (collapse === void 0) {
-            collapse = !this.contentEl.hasAttribute(attrName);
+            collapse = !util.hasClass(this.contentEl,className);
         }
         if (collapse) {
-            this.contentEl.setAttribute(attrName, '');
+            util.addClass(this.contentEl,className);
             this.collapseAllSubMenus();
         } else {
-            this.contentEl.removeAttribute(attrName);
+            util.removeClass(this.contentEl,className);
         }
 
     }

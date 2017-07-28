@@ -3,8 +3,8 @@
   height: 100%;
   pointer-events: none;
   display: none; }
-  .here-ui-annular-menu[active] {
-    display: initial; }
+  .here-ui-annular-menu[active], .here-ui-annular-menu.active {
+    display: block; }
   .here-ui-annular-menu div {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -14,22 +14,32 @@
   .here-ui-annular-menu foreignObject {
     pointer-events: none; }
   .here-ui-annular-menu .menu-position {
+    user-select: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
     pointer-events: all;
     color: #fff; }
     .here-ui-annular-menu .menu-position > .menu-items {
-      display: initial !important; }
+      display: block !important; }
+    .here-ui-annular-menu .menu-position[collapse] > .menu-items, .here-ui-annular-menu .menu-position.collapse > .menu-items {
+      transform: scale(0);
+      -webkit-transform: scale(0);
+      -moz-transform: scale(0);
+      -ms-transform: scale(0);
+      -o-transform: scale(0); }
   .here-ui-annular-menu .menu-center {
     fill: #ccc;
     cursor: pointer; }
-    .here-ui-annular-menu .menu-center:active {
+    .here-ui-annular-menu .menu-center:active, .here-ui-annular-menu .menu-center.active {
       fill: #b3a5a5; }
   .here-ui-annular-menu .menu-items {
     display: none; }
-  .here-ui-annular-menu .menu-path-g[active] > .menu-path {
+  .here-ui-annular-menu .menu-path-g[active] > .menu-path, .here-ui-annular-menu .menu-path-g.active > .menu-path {
     fill: #37483d; }
-  .here-ui-annular-menu .menu-path-g[active] > .menu-items {
-    display: initial; }
+  .here-ui-annular-menu .menu-path-g[active] > .menu-items, .here-ui-annular-menu .menu-path-g.active > .menu-items {
+    display: block; }
   .here-ui-annular-menu .menu-path {
     stroke: #00f;
     cursor: pointer;
@@ -91,17 +101,12 @@
     -o-transform: scale(1);
     opacity: 1;
     color: initial; } }
-  .here-ui-annular-menu .menu-position[collapse] > .menu-items {
+  .here-ui-annular-menu .menu-position[collapse] > .menu-items, .here-ui-annular-menu .menu-position.collapse > .menu-items {
     animation: collapse-enter 0.6s;
     -webkit-animation: collapse-enter 0.6s;
     -moz-animation: collapse-enter 0.6s;
     -ms-animation: collapse-enter 0.6s;
-    -o-animation: collapse-enter 0.6s;
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); }
+    -o-animation: collapse-enter 0.6s; }
   .here-ui-annular-menu .menu-position > .menu-center, .here-ui-annular-menu .menu-position > .menu-items {
     animation: menu-center-enter 0.6s;
     -webkit-animation: menu-center-enter 0.6s;
@@ -129,7 +134,7 @@
     -o-transform: scale(1);
     opacity: 1;
     color: initial; } }
-  .here-ui-annular-menu .menu-path-g[active] > .menu-items {
+  .here-ui-annular-menu .menu-path-g[active] > .menu-items, .here-ui-annular-menu .menu-path-g.active > .menu-items {
     animation: menu-items-enter 0.6s;
     -webkit-animation: menu-items-enter 0.6s;
     -moz-animation: menu-items-enter 0.6s;

@@ -39,8 +39,11 @@ var util;
     util.createElement = createElement;
     function preAppend(parent, element) {
         var children = parent.children;
-        if (children.length > 0) {
+        if (children && children.length > 0) {
             parent.insertBefore(element, children[0]);
+        }
+        else if (parent.firstChild) {
+            parent.insertBefore(element, parent.firstChild);
         }
         else {
             parent.appendChild(element);
@@ -48,18 +51,61 @@ var util;
     }
     util.preAppend = preAppend;
     function toggleVisible(el, visible) {
-        var attrName = 'active';
+        var className = 'active';
         if (visible === void 0) {
-            visible = !isString(el.getAttribute(attrName));
+            visible = !hasClass(el, className);
         }
         if (visible) {
-            el.setAttribute(attrName, '');
+            addClass(el, className);
         }
         else {
-            el.removeAttribute(attrName);
+            removeClass(el, className);
         }
     }
     util.toggleVisible = toggleVisible;
+    function getClassNames(el) {
+        var clazz = el.getAttribute('class') || '';
+        var classNames = clazz.split(/\s+/);
+        return classNames;
+    }
+    function addClass(el, className) {
+        className = className.trim();
+        var classNames = getClassNames(el);
+        if (classNames.indexOf(className) >= 0) {
+            return;
+        }
+        classNames.push(className);
+        el.setAttribute('class', classNames.join(' '));
+    }
+    util.addClass = addClass;
+    function removeClass(el, className) {
+        className = className.trim();
+        var classNames = getClassNames(el);
+        var index = classNames.indexOf(className);
+        if (index >= 0) {
+            classNames.splice(index, 1);
+        }
+        el.setAttribute('class', classNames.join(' '));
+    }
+    util.removeClass = removeClass;
+    function hasClass(el, className) {
+        className = className.trim();
+        var classNames = getClassNames(el);
+        return classNames.indexOf(className) >= 0;
+    }
+    util.hasClass = hasClass;
+    function toggleClass(el, className) {
+        className = className.trim();
+        var classNames = getClassNames(el);
+        var index = classNames.indexOf(className);
+        if (index >= 0) {
+            classNames.splice(index, 1);
+        }
+        else {
+            classNames.push(className);
+        }
+    }
+    util.toggleClass = toggleClass;
     function style(el, name, value) {
         var style = el.style;
         if (isObject(name)) {
@@ -145,7 +191,7 @@ var AnnularMenu = (function () {
     AnnularMenu.prototype._renderMenuCenter = function () {
         var centerSize = this.centerSize;
         var center = util$1.createSvgElement('circle');
-        center.setAttribute('class', classNames.center);
+        util$1.addClass(center, classNames.center);
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
@@ -153,12 +199,12 @@ var AnnularMenu = (function () {
     };
     AnnularMenu.prototype._renderContentEl = function () {
         var contentEl = util$1.createSvgElement('g');
-        contentEl.setAttribute('class', classNames.position);
+        util$1.addClass(contentEl, classNames.position);
         return contentEl;
     };
     AnnularMenu.prototype._renderRootEl = function () {
         var svg = util$1.createSvgElement('svg');
-        svg.setAttribute('class', classNames.root);
+        util$1.addClass(svg, classNames.root);
         util$1.toggleVisible(svg, true);
         return svg;
     };
@@ -201,14 +247,14 @@ var AnnularMenu = (function () {
         var radiusStep = util$1.valueOf(menuList.radiusStep, defaultConstant.radiusStep);
         baseRadius += radiusStep;
         var pg = util$1.createSvgElement('g');
-        pg.setAttribute('class', classNames.menuItems);
+        util$1.addClass(pg, classNames.menuItems);
         var menus = menuList.items;
         var offsetAngle = 0;
         menus.forEach(function (menu) {
             var angle = menu.angle;
             var tempDeg = startDeg + angle + offsetAngle;
             var arcG = (util$1.createSvgElement('g'));
-            arcG.setAttribute('class', classNames.menuPathGroup);
+            util$1.addClass(arcG, classNames.menuPathGroup);
             arcG.__menuData__ = {
                 menu: menu,
                 angle: angle,
@@ -216,7 +262,7 @@ var AnnularMenu = (function () {
                 offsetAngle: startDeg + offsetAngle
             };
             var p = util$1.createSvgElement('path');
-            p.setAttribute('class', classNames.menuPath);
+            util$1.addClass(p, classNames.menuPath);
             var paths = [];
             var pointA = {
                 x: Math.cos(tempDeg) * baseRadius,
@@ -327,16 +373,16 @@ var AnnularMenu = (function () {
         this.contentEl.setAttribute(attrName, transform);
     };
     AnnularMenu.prototype.toggleCollapse = function (collapse) {
-        var attrName = 'collapse';
+        var className = 'collapse';
         if (collapse === void 0) {
-            collapse = !this.contentEl.hasAttribute(attrName);
+            collapse = !util$1.hasClass(this.contentEl, className);
         }
         if (collapse) {
-            this.contentEl.setAttribute(attrName, '');
+            util$1.addClass(this.contentEl, className);
             this.collapseAllSubMenus();
         }
         else {
-            this.contentEl.removeAttribute(attrName);
+            util$1.removeClass(this.contentEl, className);
         }
     };
     AnnularMenu.prototype.toggleVisible = function (visible) {
