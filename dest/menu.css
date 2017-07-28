@@ -140,5 +140,5 @@
     -moz-animation: menu-items-enter 0.6s;
     -ms-animation: menu-items-enter 0.6s;
     -o-animation: menu-items-enter 0.6s; }
-  .here-ui-annular-menu * {
+  .here-ui-annular-menu, .here-ui-annular-menu * {
     -webkit-tap-highlight-color: transparent; }
