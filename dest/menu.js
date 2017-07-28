@@ -137,6 +137,10 @@ var util;
     }
     util.isString = isString;
 })(util || (util = {}));
+var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function (executor) {
+    return setTimeout(executor, 1000 / 60);
+};
+var cancelFrame = window.cancelAnimationFrame || window['webkitCancelAnimationFrame'] || window['mozCancelAnimationFrame'] || clearTimeout;
 var util$1 = util;
 
 var defaultConstant = {
@@ -431,11 +435,11 @@ var AnnularMenu = (function () {
             if (currentMenuEl === menuTarget) {
                 return;
             }
-            subMenuRenderTimeout && clearTimeout(subMenuRenderTimeout);
-            subMenuRenderTimeout = setTimeout(function () {
+            subMenuRenderTimeout && cancelFrame(subMenuRenderTimeout);
+            subMenuRenderTimeout = nextFrame(function () {
                 currentMenuEl = menuTarget;
                 _this.renderSubMenus(menuTarget);
-            }, 30);
+            });
         };
         ['mouseover', 'click'].forEach(function (evtType) {
             _this._el.addEventListener(evtType, function (e) {

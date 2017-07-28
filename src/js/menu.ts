@@ -1,4 +1,5 @@
 import util from './util';
+import { nextFrame,cancelFrame } from './util';
 import { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,EventListeners } from './interface';
 import { defaultConstant,classNames } from './config';
 class AnnularMenu implements AnnularMenuOption {
@@ -321,11 +322,11 @@ class AnnularMenu implements AnnularMenuOption {
             if (currentMenuEl === menuTarget) {
                 return;
             }
-            subMenuRenderTimeout && clearTimeout(subMenuRenderTimeout);
-            subMenuRenderTimeout = setTimeout(() => {
+            subMenuRenderTimeout && cancelFrame(subMenuRenderTimeout);
+            subMenuRenderTimeout = nextFrame(() => {
                 currentMenuEl = menuTarget;
                 this.renderSubMenus(menuTarget);
-            }, 30);
+            });
         }
 
 

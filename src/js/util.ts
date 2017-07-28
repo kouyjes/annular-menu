@@ -95,7 +95,7 @@ namespace util{
             if(value === undefined){
                 return style[name];
             }
-            style[name] = value;
+            style[name] = <String>value;
         }
     };
     export function parent(target:HTMLElement){
@@ -108,4 +108,8 @@ namespace util{
         return typeof value === 'string';
     }
 }
+export var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function(executor){
+        return setTimeout(executor,1000/60);
+    };
+export var cancelFrame = window.cancelAnimationFrame || window['webkitCancelAnimationFrame'] || window['mozCancelAnimationFrame'] || clearTimeout;
 export default util;
