@@ -35,7 +35,7 @@ namespace util{
     export function toggleVisible(el:HTMLElement,visible?:boolean){
         var attrName = 'active';
         if(visible === void 0){
-            visible = typeof el.getAttribute(attrName) !== 'string';
+            visible = !isString(el.getAttribute(attrName));
         }
         if(visible){
             el.setAttribute(attrName,'');
@@ -45,13 +45,13 @@ namespace util{
     }
     export function style(el:HTMLElement,name:String|Object,value?:String|number){
         var style = el.style;
-        if(typeof name === 'object'){
+        if(isObject(name)){
             Object.keys(name).forEach((key) => {
                 if(key in style){
                     style[key] = name[key];
                 }
             });
-        }else if(typeof name === 'string'){
+        }else if(isString(name)){
             if(value === undefined){
                 return style[name];
             }
@@ -60,6 +60,12 @@ namespace util{
     };
     export function parent(target:HTMLElement){
         return target.parentElement || target.parentNode;
+    }
+    export function isObject(value):boolean{
+        return typeof value === 'object' && null != value;
+    }
+    export function isString(value):boolean{
+        return typeof value === 'string';
     }
 }
 export default util;

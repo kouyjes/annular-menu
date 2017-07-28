@@ -50,7 +50,7 @@ var util;
     function toggleVisible(el, visible) {
         var attrName = 'active';
         if (visible === void 0) {
-            visible = typeof el.getAttribute(attrName) !== 'string';
+            visible = !isString(el.getAttribute(attrName));
         }
         if (visible) {
             el.setAttribute(attrName, '');
@@ -62,14 +62,14 @@ var util;
     util.toggleVisible = toggleVisible;
     function style(el, name, value) {
         var style = el.style;
-        if (typeof name === 'object') {
+        if (isObject(name)) {
             Object.keys(name).forEach(function (key) {
                 if (key in style) {
                     style[key] = name[key];
                 }
             });
         }
-        else if (typeof name === 'string') {
+        else if (isString(name)) {
             if (value === undefined) {
                 return style[name];
             }
@@ -82,6 +82,14 @@ var util;
         return target.parentElement || target.parentNode;
     }
     util.parent = parent;
+    function isObject(value) {
+        return typeof value === 'object' && null != value;
+    }
+    util.isObject = isObject;
+    function isString(value) {
+        return typeof value === 'string';
+    }
+    util.isString = isString;
 })(util || (util = {}));
 var util$1 = util;
 
@@ -102,6 +110,7 @@ var classNames = {
     menuText: 'menu-text',
     menuItems: 'menu-items'
 };
+
 var AnnularMenu = (function () {
     function AnnularMenu(option) {
         this.menuList = {
@@ -110,6 +119,12 @@ var AnnularMenu = (function () {
         this.collapsible = true;
         this.draggable = true;
         this.centerSize = defaultConstant.centerSize;
+        this.listeners = {
+            click: [],
+            mouseover: [],
+            menuClick: [],
+            menuHover: []
+        };
         this.assignOption(option);
     }
     AnnularMenu.prototype.assignOption = function (option) {
@@ -144,6 +159,7 @@ var AnnularMenu = (function () {
     AnnularMenu.prototype._renderRootEl = function () {
         var svg = util$1.createSvgElement('svg');
         svg.setAttribute('class', classNames.root);
+        util$1.toggleVisible(svg, true);
         return svg;
     };
     AnnularMenu.prototype.renderMenuContent = function (menu, offsetAngle, baseRadius, offsetRadius) {
@@ -248,7 +264,9 @@ var AnnularMenu = (function () {
         rootEl.appendChild(contentEl);
         this._el = rootEl;
         this.contentEl = contentEl;
-        this.contentEl.setAttribute('transform', 'translate(' + position.x + ',' + position.y + ')');
+        if (position) {
+            this.position(position);
+        }
         var menuList = this.menuList;
         var menus = menuList && menuList.items;
         if (!menus || menus.length === 0) {
@@ -264,17 +282,65 @@ var AnnularMenu = (function () {
         this.bindEvent();
         return this._el;
     };
+    AnnularMenu.prototype.position = function (pointX, pointY) {
+        var attrName = 'transform';
+        var transform = this.contentEl.getAttribute(attrName) || '';
+        var translateReg = /\b(translate)\s*\(\s*([^()]+)\s*,\s*([^()]+)\s*\)/;
+        var _position = {
+            x: 0,
+            y: 0
+        };
+        if (transform) {
+            var match = transform.match(translateReg);
+            if (match) {
+                _position.x = parseFloat(match[2]) || 0;
+                _position.y = parseFloat(match[3]) || 0;
+            }
+        }
+        if (pointX === void 0) {
+            return _position;
+        }
+        var point;
+        if (util$1.isObject(pointX)) {
+            point = pointX;
+            if (pointY !== void 0) {
+                point.y = pointY;
+            }
+        }
+        else {
+            point = {
+                x: pointX,
+                y: pointY
+            };
+        }
+        point.x = point.x === void 0 ? _position.x : point.x;
+        point.y = point.y === void 0 ? _position.y : point.y;
+        var posStr = '(' + point.x + ',' + point.y + ')';
+        if (!translateReg.test(transform)) {
+            transform += ' translate' + posStr;
+        }
+        else {
+            transform = transform.replace(translateReg, function (all, name) {
+                return name + posStr;
+            });
+        }
+        this.contentEl.setAttribute(attrName, transform);
+    };
     AnnularMenu.prototype.toggleCollapse = function (collapse) {
+        var attrName = 'collapse';
         if (collapse === void 0) {
-            collapse = !this.contentEl.hasAttribute('collapse');
+            collapse = !this.contentEl.hasAttribute(attrName);
         }
         if (collapse) {
-            this.contentEl.setAttribute('collapse', '');
+            this.contentEl.setAttribute(attrName, '');
             this.collapseAllSubMenus();
         }
         else {
-            this.contentEl.removeAttribute('collapse');
+            this.contentEl.removeAttribute(attrName);
         }
+    };
+    AnnularMenu.prototype.toggleVisible = function (visible) {
+        util$1.toggleVisible(this._el, visible);
     };
     AnnularMenu.prototype._findMenuTarget = function (target) {
         while (true) {
@@ -325,11 +391,49 @@ var AnnularMenu = (function () {
                 _this.renderSubMenus(menuTarget);
             }, 30);
         };
-        this._el.addEventListener('mouseover', function (e) {
-            var target = e.target;
-            var menuTarget = _this._findMenuTarget(target);
-            renderSubMenus(menuTarget);
+        ['mouseover', 'click'].forEach(function (evtType) {
+            _this._el.addEventListener(evtType, function (e) {
+                var target = e.target;
+                var menuTarget = _this._findMenuTarget(target);
+                renderSubMenus(menuTarget);
+                if (menuTarget) {
+                    var menu_1 = menuTarget.__menuData__.menu;
+                    if (e.type === 'click') {
+                        _this.listeners.menuClick.forEach(function (handler) {
+                            handler.call(_this, e, menu_1);
+                        });
+                    }
+                    else {
+                        _this.listeners.menuHover.forEach(function (handler) {
+                            handler.call(_this, e, menu_1);
+                        });
+                    }
+                }
+                _this.listeners[evtType].forEach(function (handler) {
+                    handler.call(_this, e);
+                });
+            });
         });
+    };
+    AnnularMenu.prototype.addEventListener = function (type, handler) {
+        var listeners = this.listeners[type];
+        if (!listeners) {
+            return;
+        }
+        var index = listeners.indexOf(handler);
+        if (index === -1 && handler) {
+            listeners.push(handler);
+        }
+    };
+    AnnularMenu.prototype.removeEventListener = function (type, handler) {
+        var listeners = this.listeners[type];
+        if (!listeners) {
+            return;
+        }
+        var index = listeners.indexOf(handler);
+        if (index >= 0) {
+            listeners.splice(index, 1);
+        }
     };
     AnnularMenu.prototype._findMenuTargetPath = function (target) {
         var pathElements = [];

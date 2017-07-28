@@ -1,0 +1,65 @@
+@import "util";
+// menu collapse style
+@keyframes collapse-enter {
+  from{
+    @include css(transform,scale(1));
+  }
+  to{
+    @include css(transform,scale(0));
+  }
+}
+@keyframes menu-center-enter {
+  0%{
+    @include css(transform,scale(0.2));
+    opacity:0;
+    color:transparent;
+  }
+  80%{
+    color:initial;
+  }
+  100%{
+    @include css(transform,scale(1));
+    opacity:1;
+    color:initial;
+  }
+}
+.menu-position{
+  &[collapse]{
+    >.menu-items{
+      @include css(animation,collapse-enter .6s);
+      @include css(transform,scale(0));
+    }
+
+  }
+  >.menu-center,>.menu-items{
+    @include css(animation,menu-center-enter .6s);
+  }
+}
+
+
+// sub menus animation
+@keyframes menu-items-enter {
+  0%{
+    @include css(transform,scale(0.4));
+    opacity:0;
+    color:transparent;
+  }
+  30%{
+    opacity:0;
+  }
+  80%{
+    color:initial;
+  }
+  100%{
+    @include css(transform,scale(1));
+    opacity:1;
+    color:initial;
+  }
+}
+.menu-path-g{
+  &[active]{
+    >.menu-items{
+      @include css(animation,menu-items-enter .6s);
+    }
+  }
+}

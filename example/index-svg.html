@@ -11,6 +11,8 @@
             height:100%;
             margin:0;
             padding:0;
+            background-image: url(./image/bg.jpg);
+            background-size: auto 100%;
         }
         .h-context-menu{
             position: fixed;
@@ -22,6 +24,7 @@
     </style>
     <script src="../dest/menu.js"></script>
     <script>
+        var contextMenu;
         function randomColor(){
             var rgb = ['rgb('];
             rgb.push(parseInt(255 * Math.random()));
@@ -32,9 +35,10 @@
             rgb.push(')');
             return rgb.join('');
         }
-        var centerX = screen.availWidth / 2,
-                centerY = screen.availHeight / 2;
+
         function init(){
+            var centerX = document.body.clientWidth / 2,
+                    centerY = document.body.clientHeight / 2;
             var menus_0 = [];
             var menus_1 = [];
             var menus_2 = [];
@@ -79,7 +83,7 @@
                     angle:Math.PI / 6,
                     menuList:{
                         items:menus_3,
-                        radiusStep:10,
+                        radiusStep:5,
                         angle:Math.PI / 6
                     },
                     callback: function (el) {
@@ -97,7 +101,7 @@
                     level:1,
                     menuList:{
                         items:menus_2,
-                        offsetRadius:120
+                        offsetRadius:65
                     }
                 };
                 menus_1.push(item);
@@ -110,7 +114,7 @@
                     fontSize: 12,
                     level: 0,
                     menuList:{
-                        radiusStep:10,
+                        radiusStep:5,
                         items:menus_1
                     }
                 };
@@ -119,7 +123,7 @@
                     //item.angle = Math.PI / 2;
                 }
             }
-            var contextMenu = new HERE.UI.AnnularMenu({
+            contextMenu = new HERE.UI.AnnularMenu({
                 menuList:{
                     items:menus_0
                 }
@@ -128,22 +132,21 @@
                 x:centerX,
                 y:centerY
             });
+            contextMenu.addEventListener('menuClick', function (e,menu) {
+                console.log('menu click');
+                console.log(menu);
+            });
+            contextMenu.addEventListener('menuHover', function (e,menu) {
+                console.log('menu hover');
+                console.log(menu);
+            });
             document.querySelector('.h-context-menu').appendChild(element);
+            
         }
     </script>
 </head>
 <body onload="init()">
-asdfasdf
 <div class="h-context-menu">
-    <!--<svg width="500" height="500">
-        <circle r="50" cx="250" cy="250" fill="#ccc"></circle>
-        <g>
-            <path d="M300 250L350 250 A100 100 0 0 1 250 350 L250 300A50 50 0 0 0 300 250"></path>
-        </g>
-        <foreignObject x="50" y="50" width="300" height="100">
-            <div>asdfasd</div>
-        </foreignObject>
-    </svg>-->
 </div>
 
 

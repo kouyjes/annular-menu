@@ -4,8 +4,8 @@
   "description": "circle menu,menu,context menu",
   "main": "index.js",
   "scripts": {
-    "build":"rollup -c && uglifyjs dest/menu.js > dest/menu.min.js",
-    "build-css": "scss src/themes/menu.scss > dest/menu.css",
+    "build": "rollup -c && uglifyjs dest/menu.js > dest/menu.min.js",
+    "build-css": "scss src/themes/menu.scss > dest/menu.css && uglifycss dest/menu.css > dest/menu.min.css",
     "build-all": "npm run build && npm run build-css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +26,8 @@
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
     "ruby": "^0.6.1",
-    "scss": "^0.2.4"
+    "scss": "^0.2.4",
+    "uglifycss": "0.0.27"
   },
   "author": "kouyjes",
   "license": "ISC",
