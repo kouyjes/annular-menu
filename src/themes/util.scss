@@ -5,3 +5,20 @@ $browsePrefixes:('-webkit-','-moz-','-ms-','-o-');
     #{$prefix}#{$name}:$value;
   }
 }
+@mixin keyframes($name) {
+  @keyframes #{$name} {
+    @content;
+  }
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @-o-keyframes #{$name} {
+    @content;
+  }
+}

@@ -261,10 +261,12 @@ var AnnularMenu = (function () {
                 icon.appendChild(img);
                 html.appendChild(icon);
             }
-            var text = util$1.createElement('div');
-            text.className = classNames.menuText;
-            text.innerText = menu.caption;
-            html.appendChild(text);
+            if (menu.caption) {
+                var text = util$1.createElement('div');
+                text.className = classNames.menuText;
+                text.innerText = menu.caption;
+                html.appendChild(text);
+            }
         }
         return objectEle;
     };

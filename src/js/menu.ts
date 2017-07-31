@@ -89,12 +89,13 @@ class AnnularMenu implements AnnularMenuOption {
                 icon.appendChild(img);
                 html.appendChild(icon);
             }
+            if(menu.caption){
+                let text = util.createElement('div');
+                text.className = classNames.menuText;
+                text.innerText = menu.caption;
+                html.appendChild(text);
+            }
 
-            let text = util.createElement('div');
-            text.className = classNames.menuText;
-            text.innerText = menu.caption;
-
-            html.appendChild(text);
         }
 
         return objectEle;

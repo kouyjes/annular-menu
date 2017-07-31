@@ -5,6 +5,9 @@
   height:100%;
   pointer-events: none;
   display:none;
+  *{
+    @include css(backface-visibility,'hidden');
+  }
   &[active],&.active{
     display: block;
   }
@@ -21,17 +24,6 @@
     @include css(user-select,none);
     pointer-events: all;
     color:$fontColor;
-
-    >.menu-items{
-      display:block !important;
-    }
-
-    &[collapse],&.collapse{
-      >.menu-items{
-        @include css(transform,scale(0));
-      }
-
-    }
   }
 
   .menu-center{
@@ -41,9 +33,18 @@
     }
     cursor:pointer;
   }
-
   .menu-items{
     display:none;
+  }
+  .menu-position{
+    >.menu-items{
+      display:block !important;
+    }
+    &[collapse],&.collapse{
+      >.menu-items{
+        @include css(transform,scale(0));
+      }
+    }
   }
 
   .menu-path-g{

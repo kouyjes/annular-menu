@@ -1,6 +1,6 @@
 @import "util";
 // menu collapse style
-@keyframes collapse-enter {
+@include keyframes(collapse-enter) {
   from{
     @include css(transform,scale(1));
   }
@@ -8,7 +8,7 @@
     @include css(transform,scale(0));
   }
 }
-@keyframes menu-center-enter {
+@include keyframes(menu-center-enter) {
   0%{
     @include css(transform,scale(0.2));
     opacity:0;
@@ -37,7 +37,7 @@
 
 
 // sub menus animation
-@keyframes menu-items-enter {
+@include keyframes(menu-items-enter) {
   0%{
     @include css(transform,scale(0.4));
     opacity:0;
