@@ -24,10 +24,14 @@ interface Point {
     x:number;
     y:number;
 }
+interface Size{
+    width:number;
+    height:number;
+}
 interface EventListeners {
     click:Function[],
     mouseover:Function[],
     menuClick:Function[],
     menuHover:Function[]
 }
-export { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,EventListeners }
+export { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,Size,EventListeners }

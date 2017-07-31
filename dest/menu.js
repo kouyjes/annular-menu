@@ -136,7 +136,15 @@ var util;
         return typeof value === 'string';
     }
     util.isString = isString;
-    function getPostition(e) {
+    function isEventSupport(eventType) {
+        return 'on' + eventType in document;
+    }
+    util.isEventSupport = isEventSupport;
+    function getPosition(e) {
+        var touches = e['touches'];
+        if (touches && touches.length > 0) {
+            e = touches[0];
+        }
         var evt = e;
         var x = evt.clientX || evt.pageX, y = evt.clientY || evt.pageY;
         return {
@@ -144,7 +152,15 @@ var util;
             y: y
         };
     }
-    util.getPostition = getPostition;
+    util.getPosition = getPosition;
+    function sizeOf(el) {
+        var size = {
+            width: el.clientWidth,
+            height: el.clientHeight
+        };
+        return size;
+    }
+    util.sizeOf = sizeOf;
 })(util || (util = {}));
 var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function (executor) {
     return setTimeout(executor, 1000 / 60);
@@ -430,12 +446,13 @@ var AnnularMenu = (function () {
     };
     AnnularMenu.prototype.bindDragEvent = function () {
         var _this = this;
+        var events;
         var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
         var className = 'event-source';
         var startPoint, startPos = null;
         var mouseDown = function (e) {
             util$1.addClass(_this.element, className);
-            startPoint = util$1.getPostition(e);
+            startPoint = util$1.getPosition(e);
             
             startPos = _this.position();
         };
@@ -443,17 +460,22 @@ var AnnularMenu = (function () {
             if (!startPoint) {
                 return;
             }
-            var curPoint = util$1.getPostition(e);
+            var curPoint = util$1.getPosition(e);
             var pos = {
                 x: curPoint.x - startPoint.x + startPos.x,
                 y: curPoint.y - startPoint.y + startPos.y
             };
+            var size = util$1.sizeOf(_this.element), circleElSize = util$1.sizeOf(circleEl);
+            pos.x = Math.max(circleElSize.width / 2, pos.x);
+            pos.x = Math.min(pos.x, size.width - circleElSize.width / 2);
+            pos.y = Math.max(circleElSize.height / 2, pos.y);
+            pos.y = Math.min(pos.y, size.height - circleElSize.height / 2);
             _this.position(pos);
             e.stopPropagation();
         };
         var mouseUp = function (e) {
             util$1.removeClass(_this.element, className);
-            var curPoint = util$1.getPostition(e);
+            var curPoint = util$1.getPosition(e);
             if (startPoint && Math.pow(curPoint.x - startPoint.x, 2) + Math.pow(curPoint.y - startPoint.y, 2) > Math.pow(5, 2)) {
                 circleEl.moved = true;
             }
@@ -463,10 +485,36 @@ var AnnularMenu = (function () {
             startPoint = null;
             startPos = null;
         };
-        circleEl.addEventListener('mousedown', mouseDown);
-        this.element.addEventListener('mousemove', mouseMove);
-        this.element.addEventListener('mouseup', mouseUp);
-        this.element.addEventListener('mouseleave', mouseUp);
+        events = [
+            {
+                el: circleEl,
+                types: ['touchstart', 'mousedown'],
+                handler: mouseDown
+            },
+            {
+                el: this.element,
+                types: ['touchmove', 'mousemove'],
+                handler: mouseMove
+            },
+            {
+                el: this.element,
+                types: ['touchend', 'mouseup'],
+                handler: mouseUp
+            },
+            {
+                el: this.element,
+                types: ['mouseleave'],
+                handler: mouseUp
+            }
+        ];
+        events.some(function (eventItem) {
+            eventItem.types.some(function (type) {
+                if (util$1.isEventSupport(type)) {
+                    eventItem.el.addEventListener(type, eventItem.handler);
+                    return true;
+                }
+            });
+        });
     };
     AnnularMenu.prototype.bindCollapseEvent = function () {
         var _this = this;

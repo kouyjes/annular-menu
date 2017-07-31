@@ -1,4 +1,5 @@
 import {Point} from "./interface";
+import {Size} from "./interface";
 namespace util{
     
     export var namespaces = {
@@ -108,7 +109,14 @@ namespace util{
     export function isString(value):boolean{
         return typeof value === 'string';
     }
-    export function getPostition(e:MouseEvent|TouchEvent):Point{
+    export function isEventSupport(eventType:String){
+        return 'on' + eventType in document;
+    }
+    export function getPosition(e:MouseEvent|TouchEvent):Point{
+        var touches = e['touches'];
+        if(touches && touches.length > 0){
+            e = touches[0];
+        }
         var evt = <MouseEvent>e;
         var x = evt.clientX || evt.pageX,
             y = evt.clientY || evt.pageY;
@@ -116,6 +124,13 @@ namespace util{
             x:x,
             y:y
         };
+    }
+    export function sizeOf(el:HTMLElement):Size{
+        var size:Size = {
+            width:el.clientWidth,
+            height:el.clientHeight
+        };
+        return size;
     }
 }
 export var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function(executor){

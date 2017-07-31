@@ -306,30 +306,37 @@ class AnnularMenu implements AnnularMenuOption {
     }
 
     protected bindDragEvent() {
+        var events;
         var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
         var className = 'event-source';
         var startPoint:Point,startPos:Point = null;
         var mouseDown = (e) => {
             util.addClass(this.element,className);
-            startPoint = util.getPostition(e);;
+            startPoint = util.getPosition(e);;
             startPos = this.position();
         };
         var mouseMove = (e) => {
             if(!startPoint){
                 return;
             }
-            var curPoint = util.getPostition(e);
+            var curPoint = util.getPosition(e);
 
             var pos = {
                 x:curPoint.x - startPoint.x + startPos.x,
                 y:curPoint.y - startPoint.y + startPos.y
             };
+            var size = util.sizeOf(this.element),
+                circleElSize = util.sizeOf(circleEl);
+            pos.x = Math.max(circleElSize.width / 2,pos.x);
+            pos.x = Math.min(pos.x,size.width - circleElSize.width / 2);
+            pos.y = Math.max(circleElSize.height / 2,pos.y);
+            pos.y = Math.min(pos.y,size.height - circleElSize.height / 2);
             this.position(pos);
             e.stopPropagation();
         };
         var mouseUp = (e) => {
             util.removeClass(this.element,className);
-            var curPoint = util.getPostition(e);
+            var curPoint = util.getPosition(e);
             if(startPoint && Math.pow(curPoint.x - startPoint.x,2) + Math.pow(curPoint.y - startPoint.y,2) > Math.pow(5,2)){
                 circleEl.moved = true;
             }else{
@@ -338,10 +345,36 @@ class AnnularMenu implements AnnularMenuOption {
             startPoint = null;
             startPos = null;
         };
-        circleEl.addEventListener('mousedown', mouseDown);
-        this.element.addEventListener('mousemove',mouseMove);
-        this.element.addEventListener('mouseup',mouseUp);
-        this.element.addEventListener('mouseleave',mouseUp);
+        events = [
+            {
+                el: circleEl,
+                types: ['touchstart', 'mousedown'],
+                handler: mouseDown
+            },
+            {
+                el: this.element,
+                types: ['touchmove', 'mousemove'],
+                handler: mouseMove
+            },
+            {
+                el: this.element,
+                types: ['touchend', 'mouseup'],
+                handler: mouseUp
+            },
+            {
+                el: this.element,
+                types: ['mouseleave'],
+                handler: mouseUp
+            }
+        ];
+        events.some((eventItem) => {
+            eventItem.types.some((type) => {
+                if(util.isEventSupport(type)){
+                    eventItem.el.addEventListener(type, eventItem.handler);
+                    return true;
+                }
+            });
+        });
     }
 
     protected bindCollapseEvent() {
