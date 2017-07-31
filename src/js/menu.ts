@@ -310,6 +310,10 @@ class AnnularMenu implements AnnularMenuOption {
         var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
         var className = 'event-source';
         var startPoint:Point,startPos:Point = null;
+        var stopEvent = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+        };
         var mouseDown = (e) => {
             util.addClass(this.element,className);
             startPoint = util.getPosition(e);;
@@ -332,14 +336,14 @@ class AnnularMenu implements AnnularMenuOption {
             pos.y = Math.max(circleElSize.height / 2,pos.y);
             pos.y = Math.min(pos.y,size.height - circleElSize.height / 2);
             this.position(pos);
-            e.stopPropagation();
-            e.preventDefault();
+            stopEvent(e);
         };
         var mouseUp = (e) => {
             util.removeClass(this.element,className);
             var curPoint = util.getPosition(e);
             if(startPoint && Math.pow(curPoint.x - startPoint.x,2) + Math.pow(curPoint.y - startPoint.y,2) > Math.pow(5,2)){
                 circleEl.moved = true;
+                stopEvent(e);
             }else{
                 circleEl.moved = false;
             }

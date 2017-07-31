@@ -450,6 +450,10 @@ var AnnularMenu = (function () {
         var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
         var className = 'event-source';
         var startPoint, startPos = null;
+        var stopEvent = function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        };
         var mouseDown = function (e) {
             util$1.addClass(_this.element, className);
             startPoint = util$1.getPosition(e);
@@ -471,14 +475,14 @@ var AnnularMenu = (function () {
             pos.y = Math.max(circleElSize.height / 2, pos.y);
             pos.y = Math.min(pos.y, size.height - circleElSize.height / 2);
             _this.position(pos);
-            e.stopPropagation();
-            e.preventDefault();
+            stopEvent(e);
         };
         var mouseUp = function (e) {
             util$1.removeClass(_this.element, className);
             var curPoint = util$1.getPosition(e);
             if (startPoint && Math.pow(curPoint.x - startPoint.x, 2) + Math.pow(curPoint.y - startPoint.y, 2) > Math.pow(5, 2)) {
                 circleEl.moved = true;
+                stopEvent(e);
             }
             else {
                 circleEl.moved = false;
