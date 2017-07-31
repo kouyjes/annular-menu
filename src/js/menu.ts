@@ -333,6 +333,7 @@ class AnnularMenu implements AnnularMenuOption {
             pos.y = Math.min(pos.y,size.height - circleElSize.height / 2);
             this.position(pos);
             e.stopPropagation();
+            e.preventDefault();
         };
         var mouseUp = (e) => {
             util.removeClass(this.element,className);

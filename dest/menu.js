@@ -472,6 +472,7 @@ var AnnularMenu = (function () {
             pos.y = Math.min(pos.y, size.height - circleElSize.height / 2);
             _this.position(pos);
             e.stopPropagation();
+            e.preventDefault();
         };
         var mouseUp = function (e) {
             util$1.removeClass(_this.element, className);
