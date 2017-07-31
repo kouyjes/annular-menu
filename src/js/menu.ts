@@ -3,7 +3,7 @@ import { nextFrame,cancelFrame } from './util';
 import { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,EventListeners } from './interface';
 import { defaultConstant,classNames } from './config';
 class AnnularMenu implements AnnularMenuOption {
-    _el:SVGElement;
+    element:SVGElement;
     menuList:MenuList = {
         items: []
     };
@@ -185,7 +185,7 @@ class AnnularMenu implements AnnularMenuOption {
         contentEl.appendChild(menuCenter);
         rootEl.appendChild(contentEl);
 
-        this._el = rootEl;
+        this.element = rootEl;
         this.contentEl = contentEl;
 
         if(position){
@@ -207,7 +207,7 @@ class AnnularMenu implements AnnularMenuOption {
 
         this.bindEvent();
 
-        return this._el;
+        return this.element;
 
     }
 
@@ -271,14 +271,14 @@ class AnnularMenu implements AnnularMenuOption {
 
     }
     toggleVisible(visible?:boolean){
-        util.toggleVisible(this._el,visible);
+        util.toggleVisible(this.element,visible);
     }
     private _findMenuTarget(target:HTMLElement) {
         while (true) {
             if (target.__menuData__) {
                 return target;
             }
-            if (target === this._el) {
+            if (target === this.element) {
                 break;
             }
             if (target = util.parent(target)) {
@@ -306,13 +306,49 @@ class AnnularMenu implements AnnularMenuOption {
     }
 
     protected bindDragEvent() {
+        var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
+        var className = 'event-source';
+        var startPoint:Point,startPos:Point = null;
+        var mouseDown = (e) => {
+            util.addClass(this.element,className);
+            startPoint = util.getPostition(e);;
+            startPos = this.position();
+        };
+        var mouseMove = (e) => {
+            if(!startPoint){
+                return;
+            }
+            var curPoint = util.getPostition(e);
 
+            var pos = {
+                x:curPoint.x - startPoint.x + startPos.x,
+                y:curPoint.y - startPoint.y + startPos.y
+            };
+            this.position(pos);
+            e.stopPropagation();
+        };
+        var mouseUp = (e) => {
+            util.removeClass(this.element,className);
+            var curPoint = util.getPostition(e);
+            if(startPoint && Math.pow(curPoint.x - startPoint.x,2) + Math.pow(curPoint.y - startPoint.y,2) > Math.pow(5,2)){
+                circleEl.moved = true;
+            }else{
+                circleEl.moved = false;
+            }
+            startPoint = null;
+            startPos = null;
+        };
+        circleEl.addEventListener('mousedown', mouseDown);
+        this.element.addEventListener('mousemove',mouseMove);
+        this.element.addEventListener('mouseup',mouseUp);
+        this.element.addEventListener('mouseleave',mouseUp);
     }
 
     protected bindCollapseEvent() {
-        var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
-        circleEl.addEventListener('click', () => {
-            this.toggleCollapse();
+        var circleEl:HTMLElement = this.contentEl.querySelector(this._selector(classNames.center));
+        circleEl.addEventListener('click', (e) => {
+            !circleEl.moved && this.toggleCollapse();
+            e.stopPropagation();
         });
     }
 
@@ -331,7 +367,7 @@ class AnnularMenu implements AnnularMenuOption {
 
 
         ['mouseover', 'click'].forEach((evtType) => {
-            this._el.addEventListener(evtType, (e) => {
+            this.element.addEventListener(evtType, (e) => {
                 var target = <HTMLElement>e.target;
                 var menuTarget = this._findMenuTarget(target);
                 renderSubMenus(menuTarget);
@@ -382,7 +418,7 @@ class AnnularMenu implements AnnularMenuOption {
 
     private _findMenuTargetPath(target:HTMLElement) {
         var pathElements = [];
-        while (target && target !== this._el) {
+        while (target && target !== this.element) {
             if (target.__menuData__) {
                 pathElements.unshift(target);
             }
@@ -406,7 +442,7 @@ class AnnularMenu implements AnnularMenuOption {
     getAllMenuEl() {
         var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
-        return slice.call(this._el.querySelectorAll(selector));
+        return slice.call(this.element.querySelectorAll(selector));
     }
 
     private collapseAllSubMenus() {

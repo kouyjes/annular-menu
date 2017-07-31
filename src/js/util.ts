@@ -1,3 +1,4 @@
+import {Point} from "./interface";
 namespace util{
     
     export var namespaces = {
@@ -106,6 +107,15 @@ namespace util{
     }
     export function isString(value):boolean{
         return typeof value === 'string';
+    }
+    export function getPostition(e:MouseEvent|TouchEvent):Point{
+        var evt = <MouseEvent>e;
+        var x = evt.clientX || evt.pageX,
+            y = evt.clientY || evt.pageY;
+        return {
+            x:x,
+            y:y
+        };
     }
 }
 export var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function(executor){

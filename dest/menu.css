@@ -5,6 +5,8 @@
   display: none; }
   .here-ui-annular-menu[active], .here-ui-annular-menu.active {
     display: block; }
+  .here-ui-annular-menu.event-source {
+    pointer-events: all; }
   .here-ui-annular-menu div {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;

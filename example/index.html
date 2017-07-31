@@ -3,66 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../dest/menu.css"/>
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1"/>
     <style type="text/css">
-        .menus{
-            position: absolute;
-            width:0;
-            height:0;
-            overflow: visible;
-            left:0;
-            top:0;
-            z-index:1;
-        }
-        .menu{
-            position:absolute;
-            border-radius: 50%;
-            z-index:2;
-        }
-        .skew{
-            position: absolute;
-            transform-origin: 0 0;
-            background-color:#fee;
+        body,html{
             width:100%;
             height:100%;
-            margin-left:50%;
-            margin-top:50%;
+            margin:0;
+            padding:0;
+            background-image: url(./image/bg.jpg);
+            background-size: auto 100%;
+            overflow: hidden;
         }
-        .menu-container{
-            position: absolute;
-            width:300px;
-            height:300px;
-            top:300px;
-            left:300px;
-            overflow:hidden;
-            border-radius:50%;
+        .h-context-menu{
+            position: relative;
+            width:100%;
+            height:100%;
         }
-        .skews{
-            position: absolute;
-            border-radius:50%;
-            overflow:hidden;
-            z-index:3;
+    </style>
+    <script src="../dest/menu.js"></script>
+    <script>
+        var contextMenu;
+        function randomColor(){
+            var rgb = ['rgb('];
+            rgb.push(parseInt(255 * Math.random()));
+            rgb.push(',');
+            rgb.push(parseInt(255 * Math.random()));
+            rgb.push(',');
+            rgb.push(parseInt(255 * Math.random()));
+            rgb.push(')');
+            return rgb.join('');
         }
 
-    </style>
+        function init(){
+            var container = document.querySelector('.h-context-menu');
+            var centerX = container.clientWidth / 2,
+                    centerY = container.clientHeight / 2;
+            var menus_0 = [];
+            var menus_1 = [];
+            var menus_2 = [];
+            var menus_3 = [];
+            var menus_4 = [];
+            for(var i = 0; i < 8; i++){
+                menus_4.push({
+                    name:'me4_' + i,
+                    caption:'me4_' + i,
+                    icon:'./image/icon.png',
+                    fontSize:12,
+                    level:2,
+                    angle:Math.PI / 6,
+                    callback: function (el) {
+                        el.querySelector('.menu-icon').style.backgroundColor = randomColor();
+                    }
+                });
+            }
+            for(var i = 0; i < 6; i++){
+                menus_3.push({
+                    name:'four_' + i,
+                    caption:'four_' + i,
+                    icon:'./image/icon.png',
+                    fontSize:12,
+                    level:2,
+                    menuList:{
+                        items:menus_4,
+                        angle:Math.PI / menus_4.length
+                    },
+                    callback: function (el) {
+                        el.querySelector('.menu-icon').style.backgroundColor = randomColor();
+                    }
+                });
+            }
+            for(var i = 0; i < 6; i++){
+                menus_2.push({
+                    name:'thir_' + i,
+                    caption:'thir_' + i,
+                    icon:'./image/icon.png',
+                    fontSize:12,
+                    level:2,
+                    angle:Math.PI / 6,
+                    menuList:{
+                        items:menus_3,
+                        radiusStep:5,
+                        angle:Math.PI / 6
+                    },
+                    callback: function (el) {
+                        el.querySelector('.menu-icon').style.backgroundColor = randomColor();
+                    }
+                });
+            }
+            var item;
+            for(var i = 0; i < 5; i++){
+                item = {
+                    name:'sec_' + i,
+                    caption:'sec_' + i,
+                    icon:'./image/ai.png',
+                    fontSize:12,
+                    level:1,
+                    menuList:{
+                        items:menus_2,
+                        offsetRadius:65
+                    }
+                };
+                menus_1.push(item);
+            }
+            for(var i = 0;i < 6;i++){
+                item = {
+                    name: 'name_' + i,
+                    caption: 'text_' + i,
+                    icon: './image/icon.png',
+                    fontSize: 12,
+                    level: 0,
+                    menuList:{
+                        radiusStep:5,
+                        items:menus_1
+                    }
+                };
+                menus_0.push(item);
+                if(i === 0){
+                    //item.angle = Math.PI / 2;
+                }
+            }
+            contextMenu = new HERE.UI.AnnularMenu({
+                menuList:{
+                    items:menus_0
+                }
+            });
+            var element = contextMenu.render({
+                x:centerX,
+                y:centerY
+            });
+            contextMenu.addEventListener('menuClick', function (e,menu) {
+                console.log('menu click');
+                console.log(menu);
+            });
+            contextMenu.addEventListener('menuHover', function (e,menu) {
+                console.log('menu hover');
+                console.log(menu);
+            });
+            container.appendChild(element);
+            
+        }
+    </script>
 </head>
-<body>
-    <div class="menu-container">
-        <div class="menus" style="top:150px;left:150px;">
-            <div class="menu" style="width:100px;height:100px;margin-left:-50px;margin-top:-50px;background-color:#ccc"></div>
-            <div class="menus">
-                <div class="menu" style="width:200px;height:200px;background-color:#ddd;margin-left:-100px;margin-top:-100px;"></div>
-                <div class="skews" style="width:200px;height:200px;margin-left:-100px;margin-top:-100px;">
-                    <!--<div class="skew" style="transform:skew(20deg,20deg)"></div>-->
-                    <div class="skew" style="transform:skew(20deg,20deg) rotate(90deg);background-color:#00f"></div>
-                   <!-- <div class="skew" style="transform:skew(20deg,20deg) rotate(180deg);"></div>
-                    <div class="skew" style="transform:skew(20deg,20deg) rotate(270deg);background-color:#00f"></div>-->
-                </div>
-                <div class="menus">
-                    <div class="menu" style="width:300px;height:300px;margin-left:-150px;margin-top:-150px;background-color:#efc"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+<body onload="init()">
+<div class="h-context-menu">
+</div>
+
 
 </body>
 </html>

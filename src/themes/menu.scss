@@ -8,6 +8,9 @@
   &[active],&.active{
     display: block;
   }
+  &.event-source{
+    pointer-events: all;
+  }
   div{
     @include css(box-sizing,border-box);
   }

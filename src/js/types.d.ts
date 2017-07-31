@@ -4,8 +4,9 @@ declare interface MenuData{
     radius:number;
     offsetAngle:number
 }
-declare interface HTMLElement{
+declare interface HTMLElement extends Node{
     src:String;
+    moved:boolean;
     addEventListener:Function;
     __menuData__:Object;
 }

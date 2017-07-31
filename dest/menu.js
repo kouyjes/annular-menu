@@ -136,6 +136,15 @@ var util;
         return typeof value === 'string';
     }
     util.isString = isString;
+    function getPostition(e) {
+        var evt = e;
+        var x = evt.clientX || evt.pageX, y = evt.clientY || evt.pageY;
+        return {
+            x: x,
+            y: y
+        };
+    }
+    util.getPostition = getPostition;
 })(util || (util = {}));
 var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function (executor) {
     return setTimeout(executor, 1000 / 60);
@@ -312,7 +321,7 @@ var AnnularMenu = (function () {
         var rootEl = this._renderRootEl(), contentEl = this._renderContentEl(), menuCenter = this._renderMenuCenter();
         contentEl.appendChild(menuCenter);
         rootEl.appendChild(contentEl);
-        this._el = rootEl;
+        this.element = rootEl;
         this.contentEl = contentEl;
         if (position) {
             this.position(position);
@@ -330,7 +339,7 @@ var AnnularMenu = (function () {
         var pg = this.renderMenus(this.menuList);
         util$1.preAppend(contentEl, pg);
         this.bindEvent();
-        return this._el;
+        return this.element;
     };
     AnnularMenu.prototype.position = function (pointX, pointY) {
         var attrName = 'transform';
@@ -390,14 +399,14 @@ var AnnularMenu = (function () {
         }
     };
     AnnularMenu.prototype.toggleVisible = function (visible) {
-        util$1.toggleVisible(this._el, visible);
+        util$1.toggleVisible(this.element, visible);
     };
     AnnularMenu.prototype._findMenuTarget = function (target) {
         while (true) {
             if (target.__menuData__) {
                 return target;
             }
-            if (target === this._el) {
+            if (target === this.element) {
                 break;
             }
             if (target = util$1.parent(target)) {
@@ -420,12 +429,51 @@ var AnnularMenu = (function () {
         this.bindHoverEvent();
     };
     AnnularMenu.prototype.bindDragEvent = function () {
+        var _this = this;
+        var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
+        var className = 'event-source';
+        var startPoint, startPos = null;
+        var mouseDown = function (e) {
+            util$1.addClass(_this.element, className);
+            startPoint = util$1.getPostition(e);
+            
+            startPos = _this.position();
+        };
+        var mouseMove = function (e) {
+            if (!startPoint) {
+                return;
+            }
+            var curPoint = util$1.getPostition(e);
+            var pos = {
+                x: curPoint.x - startPoint.x + startPos.x,
+                y: curPoint.y - startPoint.y + startPos.y
+            };
+            _this.position(pos);
+            e.stopPropagation();
+        };
+        var mouseUp = function (e) {
+            util$1.removeClass(_this.element, className);
+            var curPoint = util$1.getPostition(e);
+            if (startPoint && Math.pow(curPoint.x - startPoint.x, 2) + Math.pow(curPoint.y - startPoint.y, 2) > Math.pow(5, 2)) {
+                circleEl.moved = true;
+            }
+            else {
+                circleEl.moved = false;
+            }
+            startPoint = null;
+            startPos = null;
+        };
+        circleEl.addEventListener('mousedown', mouseDown);
+        this.element.addEventListener('mousemove', mouseMove);
+        this.element.addEventListener('mouseup', mouseUp);
+        this.element.addEventListener('mouseleave', mouseUp);
     };
     AnnularMenu.prototype.bindCollapseEvent = function () {
         var _this = this;
         var circleEl = this.contentEl.querySelector(this._selector(classNames.center));
-        circleEl.addEventListener('click', function () {
-            _this.toggleCollapse();
+        circleEl.addEventListener('click', function (e) {
+            !circleEl.moved && _this.toggleCollapse();
+            e.stopPropagation();
         });
     };
     AnnularMenu.prototype.bindHoverEvent = function () {
@@ -442,7 +490,7 @@ var AnnularMenu = (function () {
             });
         };
         ['mouseover', 'click'].forEach(function (evtType) {
-            _this._el.addEventListener(evtType, function (e) {
+            _this.element.addEventListener(evtType, function (e) {
                 var target = e.target;
                 var menuTarget = _this._findMenuTarget(target);
                 renderSubMenus(menuTarget);
@@ -487,7 +535,7 @@ var AnnularMenu = (function () {
     };
     AnnularMenu.prototype._findMenuTargetPath = function (target) {
         var pathElements = [];
-        while (target && target !== this._el) {
+        while (target && target !== this.element) {
             if (target.__menuData__) {
                 pathElements.unshift(target);
             }
@@ -508,7 +556,7 @@ var AnnularMenu = (function () {
     AnnularMenu.prototype.getAllMenuEl = function () {
         var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
-        return slice.call(this._el.querySelectorAll(selector));
+        return slice.call(this.element.querySelectorAll(selector));
     };
     AnnularMenu.prototype.collapseAllSubMenus = function () {
         this.getAllMenuEl().forEach(function (el) {
