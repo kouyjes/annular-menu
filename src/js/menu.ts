@@ -214,7 +214,7 @@ class AnnularMenu implements AnnularMenuOption {
     position(pointX?:Point|number, pointY?:number) {
         var attrName = 'transform';
         var transform = this.contentEl.getAttribute(attrName) || '';
-        var translateReg = /\b(translate)\s*\(\s*([^()]+)\s*,\s*([^()]+)\s*\)/;
+        var translateReg = /\b(translate)\s*\(\s*([^()]+)\s*[,|\s]\s*([^()]+)\s*\)/;
 
         var _position:Point = {
             x: 0,
