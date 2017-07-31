@@ -469,11 +469,11 @@ var AnnularMenu = (function () {
                 x: curPoint.x - startPoint.x + startPos.x,
                 y: curPoint.y - startPoint.y + startPos.y
             };
-            var size = util$1.sizeOf(_this.element), circleElSize = util$1.sizeOf(circleEl);
-            pos.x = Math.max(circleElSize.width / 2, pos.x);
-            pos.x = Math.min(pos.x, size.width - circleElSize.width / 2);
-            pos.y = Math.max(circleElSize.height / 2, pos.y);
-            pos.y = Math.min(pos.y, size.height - circleElSize.height / 2);
+            var size = util$1.sizeOf(_this.element);
+            pos.x = Math.max(_this.centerSize, pos.x);
+            pos.x = Math.min(pos.x, size.width - _this.centerSize);
+            pos.y = Math.max(_this.centerSize, pos.y);
+            pos.y = Math.min(pos.y, size.height - _this.centerSize);
             _this.position(pos);
             stopEvent(e);
         };

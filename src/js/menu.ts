@@ -329,12 +329,11 @@ class AnnularMenu implements AnnularMenuOption {
                 x:curPoint.x - startPoint.x + startPos.x,
                 y:curPoint.y - startPoint.y + startPos.y
             };
-            var size = util.sizeOf(this.element),
-                circleElSize = util.sizeOf(circleEl);
-            pos.x = Math.max(circleElSize.width / 2,pos.x);
-            pos.x = Math.min(pos.x,size.width - circleElSize.width / 2);
-            pos.y = Math.max(circleElSize.height / 2,pos.y);
-            pos.y = Math.min(pos.y,size.height - circleElSize.height / 2);
+            var size = util.sizeOf(this.element);
+            pos.x = Math.max(this.centerSize,pos.x);
+            pos.x = Math.min(pos.x,size.width - this.centerSize);
+            pos.y = Math.max(this.centerSize,pos.y);
+            pos.y = Math.min(pos.y,size.height - this.centerSize);
             this.position(pos);
             stopEvent(e);
         };
