@@ -1,1 +1,1 @@
-module.exports = require('./dest/js/menu');
+module.exports = require('./dest/js/menu').AnnularMenu;
