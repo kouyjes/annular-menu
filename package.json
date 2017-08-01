@@ -1,0 +1,48 @@
+{
+  "name": "annular-menu",
+  "version": "1.0.1",
+  "description": "annular menu ",
+  "main": "rollup.config.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "uglifycss": "^0.0.27"
+  },
+  "scripts": {
+    "build": "rollup -c && uglifyjs dest/js/menu.js > dest/js/menu.min.js",
+    "build-menu-css": "scss src/themes/menu.scss > dest/css/menu.css && uglifycss dest/css/menu.css > dest/css/menu.min.css",
+    "build-animation-css": "scss src/themes/menu-animation.scss > dest/css/menu-animation.css && uglifycss dest/css/menu-animation.css > dest/css/menu-animation.min.css",
+    "build-phone-css": "scss src/themes/menu-phone.scss > dest/css/menu-phone.css && uglifycss dest/css/menu-phone.css > dest/css/menu-phone.min.css",
+    "build-ie-css": "scss src/themes/menu-ie.scss > dest/css/menu-ie.css && uglifycss dest/css/menu-ie.css > dest/css/menu-ie.min.css",
+    "build-all-css": "scss src/themes/index.scss > dest/css/menu.all.css && uglifycss dest/css/menu.all.css > dest/css/menu.all.min.css",
+    "build-css":"npm run build-menu-css && npm run build-animation-css && npm run build-phone-css && npm run build-ie-css && npm run build-all-css",
+    "build-all": "npm run build && npm run build-css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "rollup": "^0.36.3",
+    "rollup-plugin-scss": "^0.1.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-plugin-uglify": "^1.0.1",
+    "ruby": "^0.6.1",
+    "scss": "^0.2.4",
+    "uglifycss": "0.0.27"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kouyjes/annular-menu.git"
+  },
+  "keywords": [
+    "annular",
+    "menu",
+    "circle",
+    "menu"
+  ],
+  "author": "kouyjes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kouyjes/annular-menu/issues"
+  },
+  "homepage": "https://github.com/kouyjes/annular-menu#readme"
+}
