@@ -1,6 +1,6 @@
 {
   "name": "annular-menu",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "annular menu ",
   "main": "rollup.config.js",
   "directories": {
@@ -9,6 +9,7 @@
   "dependencies": {
     "uglifycss": "^0.0.27"
   },
+  "main": "index.js",
   "scripts": {
     "build": "rollup -c && uglifyjs dest/js/menu.js > dest/js/menu.min.js",
     "build-menu-css": "scss src/themes/menu.scss > dest/css/menu.css && uglifycss dest/css/menu.css > dest/css/menu.min.css",
