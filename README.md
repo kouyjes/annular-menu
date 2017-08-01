@@ -1,7 +1,7 @@
 # menus
 ## Demo
-[Demo1 url](http://htmlpreview.github.io/?https://github.com/kouyjes/menus/blob/master/example/index.html)
-[Demo2 url](http://htmlpreview.github.io/?https://github.com/kouyjes/menus/blob/master/example/index-default.html)
+- [Demo1 url](http://htmlpreview.github.io/?https://github.com/kouyjes/menus/blob/master/example/index.html)
+- [Demo2 url](http://htmlpreview.github.io/?https://github.com/kouyjes/menus/blob/master/example/index-default.html)
 ![](./screenshot/menu_01.png)
 ![](./screenshot/menu_02.png)
 ## Getting Started
@@ -92,18 +92,18 @@
     container.appendChild(element);
 ```
 ### Event
-1.menuClick
-2.menuHover
-3.click
-4.mouseover
+1. menuClick
+2. menuHover
+3. click
+4. mouseover
 ```javascript
     contextMenu.addEventListener('menuClick', function (e,menu) {
     });
 ```
 ### API 
-1.render(position?:Point):SVGElement
-2.position(pointX?:Point|number, pointY?:number)
-3.toggleCollapse(collapse?:boolean)
-4.toggleVisible(visible?:boolean)
-5.addEventListener(type:String, handler:Function)
-6.removeEventListener(type:String, handler:Function)
+1. render(position?:Point):SVGElement
+2. position(pointX?:Point|number, pointY?:number)
+3. toggleCollapse(collapse?:boolean)
+4. toggleVisible(visible?:boolean)
+5. addEventListener(type:String, handler:Function)
+6. removeEventListener(type:String, handler:Function)
