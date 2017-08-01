@@ -1,13 +1,12 @@
 {
   "name": "annular-menu",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "annular menu ",
   "main": "rollup.config.js",
   "directories": {
     "example": "example"
   },
   "dependencies": {
-    "uglifycss": "^0.0.27"
   },
   "main": "index.js",
   "scripts": {
