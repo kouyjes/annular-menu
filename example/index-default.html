@@ -55,42 +55,36 @@
             var menus_2 = [];
             var menus_3 = [];
             var menus_4 = [];
-            for(var i = 0; i < 8; i++){
+            for(var i = 0; i < 5; i++){
                 menus_4.push({
                     name:'me4_' + i,
                     caption:'me4_' + i,
                     icon:'./image/icon.png',
-                    angle:Math.PI / 6,
                     callback: function (el) {
                         el.querySelector('.menu-icon').style.backgroundColor = randomColor();
                     }
                 });
             }
-            for(var i = 0; i < 6; i++){
+            for(var i = 0; i < 5; i++){
                 menus_3.push({
                     name:'four_' + i,
                     caption:'four_' + i,
                     icon:'./image/icon.png',
                     menuList:{
-                        items:menus_4,
-                        angle:Math.PI / menus_4.length
+                        items:menus_4
                     },
                     callback: function (el) {
                         el.querySelector('.menu-icon').style.backgroundColor = randomColor();
                     }
                 });
             }
-            for(var i = 0; i < 6; i++){
+            for(var i = 0; i < 5; i++){
                 menus_2.push({
                     name:'thir_' + i,
                     caption:'thir_' + i,
                     icon:'./image/icon.png',
-                    angle:Math.PI / 6,
                     menuList:{
-                        offsetRadius:70,
-                        items:menus_3,
-                        radiusStep:5,
-                        angle:Math.PI / 6
+                        items:menus_3
                     },
                     callback: function (el) {
                         el.querySelector('.menu-icon').style.backgroundColor = randomColor();
@@ -104,8 +98,7 @@
                     caption:'sec_' + i,
                     icon:'./image/ai.png',
                     menuList:{
-                        items:menus_2,
-                        offsetRadius:70
+                        items:menus_2
                     }
                 };
                 menus_1.push(item);
@@ -116,8 +109,6 @@
                     caption: 'text_' + i,
                     icon: './image/icon.png',
                     menuList:{
-                        radiusStep:5,
-                        offsetRadius:70,
                         items:menus_1
                     }
                 };
@@ -128,7 +119,6 @@
             }
             contextMenu = new HERE.UI.AnnularMenu({
                 menuList:{
-                    offsetRadius:70,
                     items:menus_0
                 }
             });
