@@ -27,12 +27,12 @@
   .menu-position{
     &[collapse],&.collapse{
       >.menu-items{
-        @include css(animation,collapse-enter .6s);
+        @include css(animation,collapse-enter .4s);
       }
 
     }
     >.menu-center,>.menu-items{
-      @include css(animation,menu-center-enter .6s);
+      @include css(animation,menu-center-enter .4s);
     }
   }
 
@@ -59,7 +59,7 @@
   .menu-path-g{
     &[active],&.active{
       >.menu-items{
-        @include css(animation,menu-items-enter .6s);
+        @include css(animation,menu-items-enter .4s);
       }
     }
   }

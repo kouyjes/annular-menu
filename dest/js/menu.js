@@ -224,7 +224,9 @@ var AnnularMenu = (function () {
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
-        return center;
+        var g = util$1.createSvgElement('g');
+        g.appendChild(center);
+        return g;
     };
     AnnularMenu.prototype._renderContentEl = function () {
         var contentEl = util$1.createSvgElement('g');

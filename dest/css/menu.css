@@ -238,17 +238,17 @@
     opacity: 1;
     color: initial; } }
   .here-ui-annular-menu .here-ui-annular-menu .menu-position[collapse] > .menu-items, .here-ui-annular-menu .here-ui-annular-menu .menu-position.collapse > .menu-items {
-    animation: collapse-enter 0.6s;
-    -webkit-animation: collapse-enter 0.6s;
-    -moz-animation: collapse-enter 0.6s;
-    -ms-animation: collapse-enter 0.6s;
-    -o-animation: collapse-enter 0.6s; }
+    animation: collapse-enter 0.4s;
+    -webkit-animation: collapse-enter 0.4s;
+    -moz-animation: collapse-enter 0.4s;
+    -ms-animation: collapse-enter 0.4s;
+    -o-animation: collapse-enter 0.4s; }
   .here-ui-annular-menu .here-ui-annular-menu .menu-position > .menu-center, .here-ui-annular-menu .here-ui-annular-menu .menu-position > .menu-items {
-    animation: menu-center-enter 0.6s;
-    -webkit-animation: menu-center-enter 0.6s;
-    -moz-animation: menu-center-enter 0.6s;
-    -ms-animation: menu-center-enter 0.6s;
-    -o-animation: menu-center-enter 0.6s; }
+    animation: menu-center-enter 0.4s;
+    -webkit-animation: menu-center-enter 0.4s;
+    -moz-animation: menu-center-enter 0.4s;
+    -ms-animation: menu-center-enter 0.4s;
+    -o-animation: menu-center-enter 0.4s; }
 @keyframes menu-items-enter {
   0% {
     transform: scale(0.4);
@@ -355,10 +355,10 @@
     opacity: 1;
     color: initial; } }
   .here-ui-annular-menu .here-ui-annular-menu .menu-path-g[active] > .menu-items, .here-ui-annular-menu .here-ui-annular-menu .menu-path-g.active > .menu-items {
-    animation: menu-items-enter 0.6s;
-    -webkit-animation: menu-items-enter 0.6s;
-    -moz-animation: menu-items-enter 0.6s;
-    -ms-animation: menu-items-enter 0.6s;
-    -o-animation: menu-items-enter 0.6s; }
+    animation: menu-items-enter 0.4s;
+    -webkit-animation: menu-items-enter 0.4s;
+    -moz-animation: menu-items-enter 0.4s;
+    -ms-animation: menu-items-enter 0.4s;
+    -o-animation: menu-items-enter 0.4s; }
   .here-ui-annular-menu .here-ui-annular-menu, .here-ui-annular-menu .here-ui-annular-menu * {
     -webkit-tap-highlight-color: transparent; }

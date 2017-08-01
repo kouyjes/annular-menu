@@ -44,7 +44,10 @@ class AnnularMenu implements AnnularMenuOption {
         center.setAttribute('r', '' + centerSize);
         center.setAttribute('cx', '0');
         center.setAttribute('cy', '0');
-        return center;
+
+        var g = util.createSvgElement('g');
+        g.appendChild(center);
+        return g;
     }
 
     private _renderContentEl() {
