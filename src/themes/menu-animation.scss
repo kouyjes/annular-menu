@@ -1,64 +1,66 @@
 @import "util";
-// menu collapse style
-@include keyframes(collapse-enter) {
-  from{
-    @include css(transform,scale(1));
-  }
-  to{
-    @include css(transform,scale(0));
-  }
-}
-@include keyframes(menu-center-enter) {
-  0%{
-    @include css(transform,scale(0.2));
-    opacity:0;
-    color:transparent;
-  }
-  80%{
-    color:initial;
-  }
-  100%{
-    @include css(transform,scale(1));
-    opacity:1;
-    color:initial;
-  }
-}
-.menu-position{
-  &[collapse],&.collapse{
-    >.menu-items{
-      @include css(animation,collapse-enter .6s);
+.here-ui-annular-menu{
+  // menu collapse style
+  @include keyframes(collapse-enter) {
+    from{
+      @include css(transform,scale(1));
     }
+    to{
+      @include css(transform,scale(0));
+    }
+  }
+  @include keyframes(menu-center-enter) {
+    0%{
+      @include css(transform,scale(0.2));
+      opacity:0;
+      color:transparent;
+    }
+    80%{
+      color:initial;
+    }
+    100%{
+      @include css(transform,scale(1));
+      opacity:1;
+      color:initial;
+    }
+  }
+  .menu-position{
+    &[collapse],&.collapse{
+      >.menu-items{
+        @include css(animation,collapse-enter .6s);
+      }
 
+    }
+    >.menu-center,>.menu-items{
+      @include css(animation,menu-center-enter .6s);
+    }
   }
-  >.menu-center,>.menu-items{
-    @include css(animation,menu-center-enter .6s);
-  }
-}
 
 
-// sub menus animation
-@include keyframes(menu-items-enter) {
-  0%{
-    @include css(transform,scale(0.4));
-    opacity:0;
-    color:transparent;
+  // sub menus animation
+  @include keyframes(menu-items-enter) {
+    0%{
+      @include css(transform,scale(0.4));
+      opacity:0;
+      color:transparent;
+    }
+    30%{
+      opacity:0;
+    }
+    80%{
+      color:initial;
+    }
+    100%{
+      @include css(transform,scale(1));
+      opacity:1;
+      color:initial;
+    }
   }
-  30%{
-    opacity:0;
-  }
-  80%{
-    color:initial;
-  }
-  100%{
-    @include css(transform,scale(1));
-    opacity:1;
-    color:initial;
-  }
-}
-.menu-path-g{
-  &[active],&.active{
-    >.menu-items{
-      @include css(animation,menu-items-enter .6s);
+  .menu-path-g{
+    &[active],&.active{
+      >.menu-items{
+        @include css(animation,menu-items-enter .6s);
+      }
     }
   }
 }
