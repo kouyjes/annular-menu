@@ -5,6 +5,7 @@ import { defaultConstant,classNames } from './config';
 class AnnularMenu implements AnnularMenuOption {
     element:SVGElement;
     menuList:MenuList = {
+        __data__:{},
         items: []
     };
     collapsible:boolean = true;
@@ -124,7 +125,6 @@ class AnnularMenu implements AnnularMenuOption {
             util.addClass(arcG,classNames.menuPathGroup);
             arcG.__menuData__ = {
                 menu: menu,
-                angle: angle,
                 radius: baseRadius + offsetRadius,
                 offsetAngle: startDeg + offsetAngle
             };
@@ -170,7 +170,7 @@ class AnnularMenu implements AnnularMenuOption {
             }
             pg.appendChild(arcG);
 
-            offsetAngle += angle;
+            offsetAngle += angle + menu.angleStep;
         });
 
         if (util.isFunction(menuList.callback)) {
@@ -201,11 +201,9 @@ class AnnularMenu implements AnnularMenuOption {
         if (!menus || menus.length === 0) {
             return;
         }
-        var angle = menuList.angle;
-        angle = angle || 2 * Math.PI / menus.length;
-        menus.forEach((menu:Menu) => {
-            menu.angle = menu.angle || angle;
-        });
+
+        menuList.angle = menuList.angle || 2 * Math.PI / menus.length;
+        this._initMenusData(menuList);
         var pg = this.renderMenus(this.menuList);
         util.preAppend(contentEl, pg);
 
@@ -214,7 +212,20 @@ class AnnularMenu implements AnnularMenuOption {
         return this.element;
 
     }
-
+    private _initMenusData(menuList:MenuList){
+        var totalAngle = 0;
+        var angle = util.isNumber(menuList.angle) ? menuList.angle : defaultConstant.arcAngle;
+        var angleStep = util.isNumber(menuList.angleStep) ? menuList.angleStep : defaultConstant.angleStep;
+        menuList.items.forEach((menu:Menu) => {
+            menu.angle = util.isNumber(menu.angle) ? menu.angle : angle;
+            menu.angleStep = util.isNumber(menu.angleStep) ? menu.angleStep : angleStep
+            totalAngle += (menu.angle + menu.angleStep);
+        });
+        if(!menuList.__data__){
+            menuList.__data__ = {};
+        }
+        menuList.__data__.totalAngle = totalAngle;
+    }
     position(pointX?:Point|number, pointY?:number) {
         var attrName = 'transform';
         var transform = this.contentEl.getAttribute(attrName) || '';
@@ -519,13 +530,12 @@ class AnnularMenu implements AnnularMenuOption {
             if (!menus || menus.length === 0) {
                 return;
             }
-            let angle = menuList.angle || currentMenu.angle || defaultConstant.arcAngle;
-            let totalAngle = 0;
-            menus.forEach((menu:Menu) => {
-                menu.angle = menu.angle || angle;
-                totalAngle += menu.angle;
-            });
-            var startAngle = menuData.offsetAngle - (totalAngle - menuData.angle) / 2;
+
+            this._initMenusData(menuList);
+
+            let totalAngle = menuList.__data__.totalAngle;
+
+            var startAngle = menuData.offsetAngle - (totalAngle - currentMenu.angle) / 2;
 
             menuGroupEl = this.renderMenus(currentMenu.menuList, startAngle, menuData.radius);
             util.preAppend(target, menuGroupEl);

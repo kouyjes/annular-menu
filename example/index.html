@@ -98,11 +98,12 @@
                 });
             }
             var item;
-            for(var i = 0; i < 5; i++){
+            for(var i = 0; i < 4; i++){
                 item = {
                     name:'sec_' + i,
                     caption:'sec_' + i,
                     icon:'./image/ai.png',
+                    angleStep:Math.PI / 160,
                     menuList:{
                         items:menus_2,
                         offsetRadius:70
@@ -116,6 +117,7 @@
                     caption: 'text_' + i,
                     icon: './image/icon.png',
                     menuList:{
+                        angleStep:Math.PI / 50,
                         radiusStep:5,
                         offsetRadius:70,
                         items:menus_1

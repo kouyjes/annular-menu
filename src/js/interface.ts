@@ -1,5 +1,6 @@
 interface MenuConfig {
     angle?:number;
+    angleStep?:number;
     callback?:Function;
 }
 interface Menu extends MenuConfig {
@@ -9,10 +10,14 @@ interface Menu extends MenuConfig {
     icon?:String;
     menuList?:MenuList;
 }
+interface MenuListData{
+    totalAngle?:number;
+}
 interface MenuList extends MenuConfig {
     items:Menu[];
     radiusStep?:number;
     offsetRadius?:number;
+    __data__:MenuListData;
 }
 interface AnnularMenuOption {
     menuList:MenuList;

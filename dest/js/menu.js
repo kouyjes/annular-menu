@@ -18,6 +18,10 @@ var util;
         return value !== undefined;
     }
     util.isDefined = isDefined;
+    function isNumber(value) {
+        return typeof value === 'number';
+    }
+    util.isNumber = isNumber;
     function valueOf(value, defaultValue) {
         if (defaultValue === void 0) { defaultValue = value; }
         return isDefined(value) ? value : defaultValue;
@@ -169,6 +173,7 @@ var cancelFrame = window.cancelAnimationFrame || window['webkitCancelAnimationFr
 var util$1 = util;
 
 var defaultConstant = {
+    angleStep: 0,
     centerSize: 30,
     radiusStep: 0,
     offsetRadius: 80,
@@ -189,6 +194,7 @@ var classNames = {
 var AnnularMenu = (function () {
     function AnnularMenu(option) {
         this.menuList = {
+            __data__: {},
             items: []
         };
         this.collapsible = true;
@@ -290,7 +296,6 @@ var AnnularMenu = (function () {
             util$1.addClass(arcG, classNames.menuPathGroup);
             arcG.__menuData__ = {
                 menu: menu,
-                angle: angle,
                 radius: baseRadius + offsetRadius,
                 offsetAngle: startDeg + offsetAngle
             };
@@ -330,7 +335,7 @@ var AnnularMenu = (function () {
                 menu.callback.call(undefined, arcG);
             }
             pg.appendChild(arcG);
-            offsetAngle += angle;
+            offsetAngle += angle + menu.angleStep;
         });
         if (util$1.isFunction(menuList.callback)) {
             menuList.callback.call(undefined, pg);
@@ -351,15 +356,26 @@ var AnnularMenu = (function () {
         if (!menus || menus.length === 0) {
             return;
         }
-        var angle = menuList.angle;
-        angle = angle || 2 * Math.PI / menus.length;
-        menus.forEach(function (menu) {
-            menu.angle = menu.angle || angle;
-        });
+        menuList.angle = menuList.angle || 2 * Math.PI / menus.length;
+        this._initMenusData(menuList);
         var pg = this.renderMenus(this.menuList);
         util$1.preAppend(contentEl, pg);
         this.bindEvent();
         return this.element;
+    };
+    AnnularMenu.prototype._initMenusData = function (menuList) {
+        var totalAngle = 0;
+        var angle = util$1.isNumber(menuList.angle) ? menuList.angle : defaultConstant.arcAngle;
+        var angleStep = util$1.isNumber(menuList.angleStep) ? menuList.angleStep : defaultConstant.angleStep;
+        menuList.items.forEach(function (menu) {
+            menu.angle = util$1.isNumber(menu.angle) ? menu.angle : angle;
+            menu.angleStep = util$1.isNumber(menu.angleStep) ? menu.angleStep : angleStep;
+            totalAngle += (menu.angle + menu.angleStep);
+        });
+        if (!menuList.__data__) {
+            menuList.__data__ = {};
+        }
+        menuList.__data__.totalAngle = totalAngle;
     };
     AnnularMenu.prototype.position = function (pointX, pointY) {
         var attrName = 'transform';
@@ -643,13 +659,9 @@ var AnnularMenu = (function () {
             if (!menus || menus.length === 0) {
                 return;
             }
-            var angle_1 = menuList.angle || currentMenu.angle || defaultConstant.arcAngle;
-            var totalAngle_1 = 0;
-            menus.forEach(function (menu) {
-                menu.angle = menu.angle || angle_1;
-                totalAngle_1 += menu.angle;
-            });
-            var startAngle = menuData.offsetAngle - (totalAngle_1 - menuData.angle) / 2;
+            this._initMenusData(menuList);
+            var totalAngle = menuList.__data__.totalAngle;
+            var startAngle = menuData.offsetAngle - (totalAngle - currentMenu.angle) / 2;
             menuGroupEl = this.renderMenus(currentMenu.menuList, startAngle, menuData.radius);
             util$1.preAppend(target, menuGroupEl);
         }

@@ -1,4 +1,5 @@
 var defaultConstant = {
+    angleStep:0,
     centerSize: 30,
     radiusStep: 0,
     offsetRadius: 80,

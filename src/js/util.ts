@@ -12,6 +12,9 @@ namespace util{
     export function isDefined(value){
         return value !== undefined;
     }
+    export function isNumber(value){
+        return typeof value === 'number';
+    }
     export function valueOf(value,defaultValue = value){
         return isDefined(value) ? value : defaultValue;
     }

@@ -1,6 +1,5 @@
 declare interface MenuData{
     menu:any;
-    angle:number;
     radius:number;
     offsetAngle:number
 }
