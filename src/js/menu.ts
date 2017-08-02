@@ -226,48 +226,21 @@ class AnnularMenu implements AnnularMenuOption {
         }
         menuList.__data__.totalAngle = totalAngle;
     }
-    position(pointX?:Point|number, pointY?:number) {
-        var attrName = 'transform';
-        var transform = this.contentEl.getAttribute(attrName) || '';
-        var translateReg = /\b(translate)\s*\(\s*([^()]+)\s*[,|\s]\s*([^()]+)\s*\)/;
+    scale(point?:Point) {
 
-        var _position:Point = {
-            x: 0,
-            y: 0
-        };
-        if (transform) {
-            let match = transform.match(translateReg);
-            if (match) {
-                _position.x = parseFloat(match[2]) || 0;
-                _position.y = parseFloat(match[3]) || 0;
-            }
-        }
-        if (pointX === void 0) {
-            return _position;
-        }
-        var point:Point;
-        if (util.isObject(pointX)) {
-            point = <Point>pointX;
-            if (pointY !== void 0) {
-                point.y = pointY;
-            }
-        } else {
-            point = {
-                x: <number>pointX,
-                y: pointY
-            };
-        }
-        point.x = point.x === void 0 ? _position.x : point.x;
-        point.y = point.y === void 0 ? _position.y : point.y;
-        var posStr = '(' + point.x + ',' + point.y + ')';
-        if (!translateReg.test(transform)) {
-            transform += ' translate' + posStr;
-        } else {
-            transform = transform.replace(translateReg, function (all, name) {
-                return name + posStr;
-            });
-        }
-        this.contentEl.setAttribute(attrName, transform);
+        return util.transform(this.contentEl,'scale',point,{
+            x:1,
+            y:1
+        });
+
+    }
+    position(point?:Point) {
+
+        return util.transform(this.contentEl,'translate',point,{
+            x:0,
+            y:0
+        });
+
     }
 
     toggleCollapse(collapse?:boolean) {

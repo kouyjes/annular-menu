@@ -102,8 +102,9 @@
 ```
 ### API 
 1. render(position?:Point):SVGElement
-2. position(pointX?:Point|number, pointY?:number)
-3. toggleCollapse(collapse?:boolean)
-4. toggleVisible(visible?:boolean)
-5. addEventListener(type:String, handler:Function)
-6. removeEventListener(type:String, handler:Function)
+2. scale(point?:Point)
+3. position(point?:Point)
+4. toggleCollapse(collapse?:boolean)
+5. toggleVisible(visible?:boolean)
+6. addEventListener(type:String, handler:Function)
+7. removeEventListener(type:String, handler:Function)

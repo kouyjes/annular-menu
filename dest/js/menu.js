@@ -165,6 +165,46 @@ var util;
         return size;
     }
     util.sizeOf = sizeOf;
+    function transform(el, name, value, defaultValue) {
+        var attrName = 'transform';
+        var transform = el.getAttribute(attrName) || '';
+        var reg = new RegExp('\\b(' + name + ')\\s*\\(\\s*([^()]+)\\s*[,|\\s]\\s*([^()]+)\\s*\\)');
+        var _value = {
+            x: defaultValue.x,
+            y: defaultValue.y
+        };
+        if (transform) {
+            var match = transform.match(reg);
+            if (match) {
+                if (parseFloat(match[2])) {
+                    _value.x = parseFloat(match[2]);
+                }
+                if (parseFloat(match[3])) {
+                    _value.y = parseFloat(match[3]);
+                }
+            }
+        }
+        if (value === void 0) {
+            return _value;
+        }
+        if (!value.x) {
+            value.x = _value.x;
+        }
+        if (!value.y) {
+            value.y = _value.y;
+        }
+        var valueStr = '(' + value.x + ',' + value.y + ')';
+        if (!reg.test(transform)) {
+            transform += name + valueStr;
+        }
+        else {
+            transform = transform.replace(reg, function (all, name) {
+                return name + valueStr;
+            });
+        }
+        el.setAttribute(attrName, transform);
+    }
+    util.transform = transform;
 })(util || (util = {}));
 var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function (executor) {
     return setTimeout(executor, 1000 / 60);
@@ -377,49 +417,17 @@ var AnnularMenu = (function () {
         }
         menuList.__data__.totalAngle = totalAngle;
     };
-    AnnularMenu.prototype.position = function (pointX, pointY) {
-        var attrName = 'transform';
-        var transform = this.contentEl.getAttribute(attrName) || '';
-        var translateReg = /\b(translate)\s*\(\s*([^()]+)\s*[,|\s]\s*([^()]+)\s*\)/;
-        var _position = {
+    AnnularMenu.prototype.scale = function (point) {
+        return util$1.transform(this.contentEl, 'scale', point, {
+            x: 1,
+            y: 1
+        });
+    };
+    AnnularMenu.prototype.position = function (point) {
+        return util$1.transform(this.contentEl, 'translate', point, {
             x: 0,
             y: 0
-        };
-        if (transform) {
-            var match = transform.match(translateReg);
-            if (match) {
-                _position.x = parseFloat(match[2]) || 0;
-                _position.y = parseFloat(match[3]) || 0;
-            }
-        }
-        if (pointX === void 0) {
-            return _position;
-        }
-        var point;
-        if (util$1.isObject(pointX)) {
-            point = pointX;
-            if (pointY !== void 0) {
-                point.y = pointY;
-            }
-        }
-        else {
-            point = {
-                x: pointX,
-                y: pointY
-            };
-        }
-        point.x = point.x === void 0 ? _position.x : point.x;
-        point.y = point.y === void 0 ? _position.y : point.y;
-        var posStr = '(' + point.x + ',' + point.y + ')';
-        if (!translateReg.test(transform)) {
-            transform += ' translate' + posStr;
-        }
-        else {
-            transform = transform.replace(translateReg, function (all, name) {
-                return name + posStr;
-            });
-        }
-        this.contentEl.setAttribute(attrName, transform);
+        });
     };
     AnnularMenu.prototype.toggleCollapse = function (collapse) {
         var className = 'collapse';

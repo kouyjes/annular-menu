@@ -135,6 +135,45 @@ namespace util{
         };
         return size;
     }
+    export function transform(el:SVGElement,name:String,value:Point,defaultValue:Point){
+        var attrName = 'transform';
+        var transform = el.getAttribute(attrName) || '';
+        var reg = new RegExp('\\b(' + name + ')\\s*\\(\\s*([^()]+)\\s*[,|\\s]\\s*([^()]+)\\s*\\)');
+
+        var _value:Point = {
+            x:defaultValue.x,
+            y:defaultValue.y
+        };
+        if (transform) {
+            let match = transform.match(reg);
+            if (match) {
+                if(parseFloat(match[2])){
+                    _value.x = parseFloat(match[2]);
+                }
+                if(parseFloat(match[3])){
+                    _value.y = parseFloat(match[3]);
+                }
+            }
+        }
+        if (value === void 0) {
+            return _value;
+        }
+        if(!value.x){
+            value.x = _value.x;
+        }
+        if(!value.y){
+            value.y = _value.y;
+        }
+        var valueStr = '(' + value.x + ',' + value.y + ')';
+        if (!reg.test(transform)) {
+            transform += name + valueStr;
+        } else {
+            transform = transform.replace(reg, function (all, name) {
+                return name + valueStr;
+            });
+        }
+        el.setAttribute(attrName, transform);
+    }
 }
 export var nextFrame = window.requestAnimationFrame || window['webkitRequestAnimationFrame'] || window['mozRequestAnimationFram'] || function(executor){
         return setTimeout(executor,1000/60);
