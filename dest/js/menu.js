@@ -169,18 +169,26 @@ var util;
         var attrName = 'transform';
         var transform = el.getAttribute(attrName) || '';
         var reg = new RegExp('\\b(' + name + ')\\s*\\(\\s*([^()]+)\\s*[,|\\s]\\s*([^()]+)\\s*\\)');
+        var _reg = new RegExp('\\b(' + name + ')\\s*\\(\\s*([^()]+)\\s*\\)');
         var _value = {
             x: defaultValue.x,
             y: defaultValue.y
         };
         if (transform) {
             var match = transform.match(reg);
+            if (!match) {
+                match = transform.match(_reg);
+                reg = _reg;
+            }
             if (match) {
                 if (parseFloat(match[2])) {
                     _value.x = parseFloat(match[2]);
                 }
                 if (parseFloat(match[3])) {
                     _value.y = parseFloat(match[3]);
+                }
+                else {
+                    _value.y = _value.x;
                 }
             }
         }
@@ -195,7 +203,7 @@ var util;
         }
         var valueStr = '(' + value.x + ',' + value.y + ')';
         if (!reg.test(transform)) {
-            transform += name + valueStr;
+            transform += ' ' + name + valueStr;
         }
         else {
             transform = transform.replace(reg, function (all, name) {
