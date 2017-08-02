@@ -681,9 +681,6 @@ var AnnularMenu = (function () {
             menuGroupEl = this.renderMenus(currentMenu.menuList, startAngle, menuData.radius);
             util$1.preAppend(target, menuGroupEl);
         }
-        if (menuGroupEl) {
-            util$1.toggleVisible(menuGroupEl, true);
-        }
     };
     return AnnularMenu;
 }());

@@ -514,10 +514,6 @@ class AnnularMenu implements AnnularMenuOption {
             util.preAppend(target, menuGroupEl);
         }
 
-        if (menuGroupEl) {
-            util.toggleVisible(menuGroupEl, true);
-        }
-
     }
 }
 export { AnnularMenu };
