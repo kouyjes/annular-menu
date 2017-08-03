@@ -1,6 +1,6 @@
 {
   "name": "annular-menu",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "annular menu ",
   "main": "rollup.config.js",
   "directories": {

@@ -40,7 +40,7 @@
     >.menu-items{
       display:block !important;
     }
-    &[collapse],&.collapse{
+    &.collapse{
       >.menu-items{
         @include css(transform,scale(0));
       }
@@ -48,12 +48,17 @@
   }
 
   .menu-path-g{
-    &[active],&.active{
+    &.active{
       >.menu-path{
         fill:$menuBgColor_hover;
       }
       >.menu-items{
         display:block;
+      }
+    }
+    &.selected{
+      >.menu-path{
+        fill:$menuBgColor_selected;
       }
     }
   }

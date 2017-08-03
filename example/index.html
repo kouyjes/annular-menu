@@ -138,13 +138,9 @@
                 x:centerX,
                 y:centerY
             });
-            contextMenu.addEventListener('menuClick', function (e,menu) {
-                console.log('menu click');
-                console.log(menu);
-            });
-            contextMenu.addEventListener('menuHover', function (e,menu) {
-                console.log('menu hover');
-                console.log(menu);
+            contextMenu.addEventListener('menuClick', function (e) {
+                var target = e.target;
+                contextMenu.selectMenuEl(target);
             });
             container.appendChild(element);
             

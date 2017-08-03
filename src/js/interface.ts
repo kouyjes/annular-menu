@@ -39,4 +39,10 @@ interface EventListeners {
     menuClick:Function[],
     menuHover:Function[]
 }
-export { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,Size,EventListeners }
+interface MenuEvent{
+    type:String;
+    target:any;
+    data?:any;
+    native?:Event
+}
+export { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,Size,EventListeners,MenuEvent }

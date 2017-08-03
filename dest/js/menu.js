@@ -56,17 +56,14 @@ var util;
     util.preAppend = preAppend;
     function toggleVisible(el, visible) {
         var className = 'active';
-        if (visible === void 0) {
-            visible = !hasClass(el, className);
-        }
-        if (visible) {
-            addClass(el, className);
-        }
-        else {
-            removeClass(el, className);
-        }
+        toggleClass(el, className, visible);
     }
     util.toggleVisible = toggleVisible;
+    function toggleSelect(el, select) {
+        var className = 'selected';
+        toggleClass(el, className, select);
+    }
+    util.toggleSelect = toggleSelect;
     function getClassNames(el) {
         var clazz = el.getAttribute('class') || '';
         var classNames = clazz.split(/\s+/);
@@ -98,15 +95,15 @@ var util;
         return classNames.indexOf(className) >= 0;
     }
     util.hasClass = hasClass;
-    function toggleClass(el, className) {
-        className = className.trim();
-        var classNames = getClassNames(el);
-        var index = classNames.indexOf(className);
-        if (index >= 0) {
-            classNames.splice(index, 1);
+    function toggleClass(el, className, addOrRemove) {
+        if (addOrRemove === void 0) {
+            addOrRemove = !hasClass(el, className);
+        }
+        if (addOrRemove) {
+            addClass(el, className);
         }
         else {
-            classNames.push(className);
+            removeClass(el, className);
         }
     }
     util.toggleClass = toggleClass;
@@ -587,20 +584,28 @@ var AnnularMenu = (function () {
                     var menu_1 = menuTarget.__menuData__.menu;
                     if (e.type === 'click') {
                         _this.listeners.menuClick.forEach(function (handler) {
-                            handler.call(_this, e, menu_1);
+                            handler.call(_this, _this.createEvent(e, menuTarget, 'menuClick', menu_1));
                         });
                     }
                     else {
                         _this.listeners.menuHover.forEach(function (handler) {
-                            handler.call(_this, e, menu_1);
+                            handler.call(_this, _this.createEvent(e, menuTarget, 'menuHover', menu_1));
                         });
                     }
                 }
                 _this.listeners[evtType].forEach(function (handler) {
-                    handler.call(_this, e);
+                    handler.call(_this, _this.createEvent(e, _this.element, evtType));
                 });
             });
         });
+    };
+    AnnularMenu.prototype.createEvent = function (e, target, type, data) {
+        return {
+            type: type,
+            target: target,
+            data: data,
+            native: e
+        };
     };
     AnnularMenu.prototype.addEventListener = function (type, handler) {
         var listeners = this.listeners[type];
@@ -622,7 +627,7 @@ var AnnularMenu = (function () {
             listeners.splice(index, 1);
         }
     };
-    AnnularMenu.prototype._findMenuTargetPath = function (target) {
+    AnnularMenu.prototype.getMenuElPath = function (target) {
         var pathElements = [];
         while (target && target !== this.element) {
             if (target.__menuData__) {
@@ -642,30 +647,41 @@ var AnnularMenu = (function () {
         className = this._className(className, prefix);
         return '.' + className;
     };
-    AnnularMenu.prototype.getAllMenuEl = function () {
+    AnnularMenu.prototype.getAllMenuElPaths = function () {
         var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
         return slice.call(this.element.querySelectorAll(selector));
     };
     AnnularMenu.prototype.collapseAllSubMenus = function () {
-        this.getAllMenuEl().forEach(function (el) {
+        this.getAllMenuElPaths().forEach(function (el) {
             util$1.toggleVisible(el, false);
         });
     };
-    AnnularMenu.prototype.renderSubMenus = function (target, visible) {
-        if (visible === void 0) { visible = true; }
+    AnnularMenu.prototype.unSelectAllMenus = function () {
+        this.getAllMenuElPaths().forEach(function (el) {
+            util$1.toggleSelect(el, false);
+        });
+    };
+    AnnularMenu.prototype.selectMenuEl = function (target) {
+        if (!target) {
+            return;
+        }
+        this.unSelectAllMenus();
+        var pathElements = this.getMenuElPath(target);
+        pathElements.forEach(function (el) {
+            util$1.toggleSelect(el, true);
+        });
+    };
+    AnnularMenu.prototype.renderSubMenus = function (target) {
         this.collapseAllSubMenus();
         if (!target) {
             return;
         }
-        var menusElSelector = this._selector(classNames.menuItems);
-        var pathElements = this._findMenuTargetPath(target);
-        pathElements.forEach(function (el, index) {
-            if (!visible && index === pathElements.length - 1) {
-                return;
-            }
+        var pathElements = this.getMenuElPath(target);
+        pathElements.forEach(function (el) {
             util$1.toggleVisible(el, true);
         });
+        var menusElSelector = this._selector(classNames.menuItems);
         var menuGroupEl = target.querySelector(menusElSelector);
         if (!menuGroupEl) {
             var menuData = target.__menuData__;

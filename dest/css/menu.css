@@ -38,16 +38,18 @@
     display: none; }
   .here-ui-annular-menu .menu-position > .menu-items {
     display: block !important; }
-  .here-ui-annular-menu .menu-position[collapse] > .menu-items, .here-ui-annular-menu .menu-position.collapse > .menu-items {
+  .here-ui-annular-menu .menu-position.collapse > .menu-items {
     transform: scale(0);
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
     -ms-transform: scale(0);
     -o-transform: scale(0); }
-  .here-ui-annular-menu .menu-path-g[active] > .menu-path, .here-ui-annular-menu .menu-path-g.active > .menu-path {
+  .here-ui-annular-menu .menu-path-g.active > .menu-path {
     fill: #37483d; }
-  .here-ui-annular-menu .menu-path-g[active] > .menu-items, .here-ui-annular-menu .menu-path-g.active > .menu-items {
+  .here-ui-annular-menu .menu-path-g.active > .menu-items {
     display: block; }
+  .here-ui-annular-menu .menu-path-g.selected > .menu-path {
+    fill: #88969f; }
   .here-ui-annular-menu .menu-path {
     stroke: #00f;
     cursor: pointer;

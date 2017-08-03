@@ -41,14 +41,11 @@ namespace util{
     }
     export function toggleVisible(el:HTMLElement,visible?:boolean){
         var className = 'active';
-        if(visible === void 0){
-            visible = !hasClass(el,className);
-        }
-        if(visible){
-            addClass(el,className);
-        }else{
-            removeClass(el,className);
-        }
+        toggleClass(el,className,visible);
+    }
+    export function toggleSelect(el:HTMLElement,select?:boolean){
+        var className = 'selected';
+        toggleClass(el,className,select);
     }
     function getClassNames(el:HTMLElement){
         var clazz = el.getAttribute('class') || '';
@@ -78,14 +75,14 @@ namespace util{
         var classNames = getClassNames(el);
         return classNames.indexOf(className) >= 0;
     }
-    export function toggleClass(el:HTMLElement,className:String){
-        className = className.trim();
-        var classNames = getClassNames(el);
-        var index = classNames.indexOf(className);
-        if(index >= 0){
-            classNames.splice(index,1);
+    export function toggleClass(el:HTMLElement,className:String,addOrRemove?:boolean){
+        if(addOrRemove === void 0){
+            addOrRemove = !hasClass(el,className);
+        }
+        if(addOrRemove){
+            addClass(el,className);
         }else{
-            classNames.push(className);
+            removeClass(el,className);
         }
     }
     export function style(el:HTMLElement,name:String|Object,value?:String|number){

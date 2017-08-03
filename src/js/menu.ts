@@ -1,6 +1,6 @@
 import util from './util';
 import { nextFrame,cancelFrame } from './util';
-import { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,EventListeners } from './interface';
+import { MenuConfig,Menu,MenuList,AnnularMenuOption,Point,EventListeners,MenuEvent } from './interface';
 import { defaultConstant,classNames } from './config';
 class AnnularMenu implements AnnularMenuOption {
     element:SVGElement;
@@ -401,24 +401,31 @@ class AnnularMenu implements AnnularMenuOption {
                     let menu = menuTarget.__menuData__.menu;
                     if (e.type === 'click') {
                         this.listeners.menuClick.forEach((handler) => {
-                            handler.call(this, e,menu);
+                            handler.call(this,this.createEvent(e,menuTarget,'menuClick',menu));
                         })
                     } else {
                         this.listeners.menuHover.forEach((handler) => {
-                            handler.call(this, e,menu);
+                            handler.call(this, this.createEvent(e,menuTarget,'menuHover',menu));
                         })
                     }
                 }
 
                 this.listeners[evtType].forEach((handler) => {
-                    handler.call(this, e);
+                    handler.call(this, this.createEvent(e,this.element,evtType));
                 });
 
             });
         });
 
     }
-
+    private createEvent(e,target:HTMLElement,type:String,data?:any):MenuEvent{
+        return {
+            type:type,
+            target:target,
+            data:data,
+            native:e
+        };
+    }
     addEventListener(type:String, handler:Function) {
         var listeners:Function[] = this.listeners[type];
         if(!listeners){
@@ -441,7 +448,7 @@ class AnnularMenu implements AnnularMenuOption {
         }
     }
 
-    private _findMenuTargetPath(target:HTMLElement) {
+    private getMenuElPath(target:HTMLElement) {
         var pathElements = [];
         while (target && target !== this.element) {
             if (target.__menuData__) {
@@ -464,19 +471,34 @@ class AnnularMenu implements AnnularMenuOption {
         return '.' + className;
     }
 
-    getAllMenuEl() {
+    getAllMenuElPaths() {
         var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
         return slice.call(this.element.querySelectorAll(selector));
     }
 
     private collapseAllSubMenus() {
-        this.getAllMenuEl().forEach((el) => {
+        this.getAllMenuElPaths().forEach((el) => {
             util.toggleVisible(el, false);
         });
     }
+    private unSelectAllMenus(){
+        this.getAllMenuElPaths().forEach((el) => {
+            util.toggleSelect(el, false);
+        });
+    }
+    private selectMenuEl(target:HTMLElement){
+        if (!target) {
+            return;
+        }
+        this.unSelectAllMenus();
+        var pathElements = this.getMenuElPath(target);
+        pathElements.forEach((el) => {
+            util.toggleSelect(el, true);
+        });
 
-    private renderSubMenus(target:HTMLElement, visible:boolean = true) {
+    }
+    private renderSubMenus(target:HTMLElement) {
 
 
         this.collapseAllSubMenus();
@@ -485,15 +507,12 @@ class AnnularMenu implements AnnularMenuOption {
             return;
         }
 
-        var menusElSelector = this._selector(classNames.menuItems);
-        var pathElements = this._findMenuTargetPath(target);
-        pathElements.forEach((el, index) => {
-            if (!visible && index === pathElements.length - 1) {
-                return;
-            }
+        var pathElements = this.getMenuElPath(target);
+        pathElements.forEach((el) => {
             util.toggleVisible(el, true);
         });
 
+        var menusElSelector = this._selector(classNames.menuItems);
         var menuGroupEl:HTMLElement = <HTMLElement>target.querySelector(menusElSelector);
         if (!menuGroupEl) {
             let menuData = <MenuData>target.__menuData__;
