@@ -425,6 +425,13 @@ var AnnularMenu = (function () {
         }
         menuList.__data__.totalAngle = totalAngle;
     };
+    AnnularMenu.prototype.getCurrentCenterSize = function () {
+        var scale = this.scale();
+        return {
+            width: this.centerSize * scale.x,
+            height: this.centerSize * scale.y
+        };
+    };
     AnnularMenu.prototype.scale = function (point) {
         return util$1.transform(this.contentEl, 'scale', point, {
             x: 1,
@@ -505,11 +512,11 @@ var AnnularMenu = (function () {
                 x: curPoint.x - startPoint.x + startPos.x,
                 y: curPoint.y - startPoint.y + startPos.y
             };
-            var size = util$1.sizeOf(_this.element);
-            pos.x = Math.max(_this.centerSize, pos.x);
-            pos.x = Math.min(pos.x, size.width - _this.centerSize);
-            pos.y = Math.max(_this.centerSize, pos.y);
-            pos.y = Math.min(pos.y, size.height - _this.centerSize);
+            var size = util$1.sizeOf(_this.element), centerSize = _this.getCurrentCenterSize();
+            pos.x = Math.max(centerSize.width, pos.x);
+            pos.x = Math.min(pos.x, size.width - centerSize.width);
+            pos.y = Math.max(centerSize.height, pos.y);
+            pos.y = Math.min(pos.y, size.height - centerSize.height);
             _this.position(pos);
             stopEvent(e);
         };

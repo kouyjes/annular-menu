@@ -228,6 +228,13 @@ class AnnularMenu implements AnnularMenuOption {
         }
         menuList.__data__.totalAngle = totalAngle;
     }
+    getCurrentCenterSize(){
+        var scale = this.scale();
+        return {
+            width:this.centerSize * scale.x,
+            height:this.centerSize * scale.y
+        };
+    }
     scale(point?:Point) {
 
         return util.transform(this.contentEl,'scale',point,{
@@ -319,11 +326,12 @@ class AnnularMenu implements AnnularMenuOption {
                 x:curPoint.x - startPoint.x + startPos.x,
                 y:curPoint.y - startPoint.y + startPos.y
             };
-            var size = util.sizeOf(this.element);
-            pos.x = Math.max(this.centerSize,pos.x);
-            pos.x = Math.min(pos.x,size.width - this.centerSize);
-            pos.y = Math.max(this.centerSize,pos.y);
-            pos.y = Math.min(pos.y,size.height - this.centerSize);
+            var size = util.sizeOf(this.element),
+                centerSize = this.getCurrentCenterSize();
+            pos.x = Math.max(centerSize.width,pos.x);
+            pos.x = Math.min(pos.x,size.width - centerSize.width);
+            pos.y = Math.max(centerSize.height,pos.y);
+            pos.y = Math.min(pos.y,size.height - centerSize.height);
             this.position(pos);
             stopEvent(e);
         };
