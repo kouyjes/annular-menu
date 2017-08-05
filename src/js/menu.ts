@@ -8,6 +8,7 @@ class AnnularMenu implements AnnularMenuOption {
         __data__:{},
         items: []
     };
+    startAngle:number = 0;
     collapsible:boolean = true;
     draggable:boolean = true;
     centerSize = defaultConstant.centerSize;
@@ -205,7 +206,7 @@ class AnnularMenu implements AnnularMenuOption {
 
         menuList.angle = menuList.angle || 2 * Math.PI / menus.length;
         this._initMenuListData(menuList);
-        var pg = this.renderMenuList(this.menuList);
+        var pg = this.renderMenuList(this.menuList,this.startAngle);
         util.addClass(pg,classNames.menuItemsRoot)
         util.preAppend(contentEl, pg);
 

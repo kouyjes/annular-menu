@@ -25,6 +25,7 @@
     }
     interface AnnularMenuOption {
         menuList:MenuList;
+        startAngle?:number;
         centerSize?:number;
         collapsible?:boolean;
         draggable?:boolean;

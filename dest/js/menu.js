@@ -243,6 +243,7 @@ var AnnularMenu = (function () {
             __data__: {},
             items: []
         };
+        this.startAngle = 0;
         this.collapsible = true;
         this.draggable = true;
         this.centerSize = defaultConstant.centerSize;
@@ -405,7 +406,7 @@ var AnnularMenu = (function () {
         }
         menuList.angle = menuList.angle || 2 * Math.PI / menus.length;
         this._initMenuListData(menuList);
-        var pg = this.renderMenuList(this.menuList);
+        var pg = this.renderMenuList(this.menuList, this.startAngle);
         util$1.addClass(pg, classNames.menuItemsRoot);
         util$1.preAppend(contentEl, pg);
         this.bindEvent();
