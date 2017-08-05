@@ -14,7 +14,8 @@ var classNames = {
     menuContent: 'menu-content',
     menuIcon: 'menu-icon',
     menuText: 'menu-text',
-    menuItems: 'menu-items'
+    menuItems: 'menu-items',
+    menuItemsRoot:'menu-items-root'
 };
 
 export { defaultConstant,classNames }

@@ -3,10 +3,10 @@
   // menu collapse style
   @include keyframes(collapse-enter) {
     from{
-      @include css(transform,scale(1));
+      @include css(transform,scale(1) rotate(90deg));
     }
     to{
-      @include css(transform,scale(0));
+      @include css(transform,scale(0) rotate(0deg));
     }
   }
   @include keyframes(menu-center-enter) {
@@ -25,7 +25,7 @@
     }
   }
   .menu-position{
-    &[collapse],&.collapse{
+    &.collapse{
       >.menu-items{
         @include css(animation,collapse-enter .4s);
       }
@@ -56,11 +56,9 @@
       color:initial;
     }
   }
-  .menu-path-g{
-    &[active],&.active{
-      >.menu-items{
-        @include css(animation,menu-items-enter .4s);
-      }
+  .menu-items{
+    &.active{
+      @include css(animation,menu-items-enter .4s);
     }
   }
 }

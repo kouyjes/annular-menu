@@ -38,7 +38,7 @@ class AnnularMenu implements AnnularMenuOption {
     /**
      * render menu center
      */
-    private _renderMenuCenter() {
+    private _renderCenterEl() {
         var centerSize = this.centerSize;
         var center = util.createSvgElement('circle');
         util.addClass(center,classNames.center);
@@ -64,7 +64,7 @@ class AnnularMenu implements AnnularMenuOption {
         return svg;
     }
 
-    private renderMenuContent(menu:Menu, offsetAngle:number, baseRadius:number, offsetRadius:number) {
+    private renderMenuContentEl(menu:Menu, offsetAngle:number, baseRadius:number, offsetRadius:number) {
 
         var tempDeg = offsetAngle;
         var arcCenterX = (baseRadius + offsetRadius / 2) * Math.cos(tempDeg) - offsetRadius / 2,
@@ -105,7 +105,7 @@ class AnnularMenu implements AnnularMenuOption {
         return objectEle;
     }
 
-    private renderMenus(menuList:MenuList, startDeg:number = 0, baseRadius:number = this.centerSize) {
+    private renderMenuList(menuList:MenuList, startDeg:number = 0, baseRadius:number = this.centerSize) {
 
 
         var offsetRadius = util.valueOf(menuList.offsetRadius, defaultConstant.offsetRadius);
@@ -160,7 +160,7 @@ class AnnularMenu implements AnnularMenuOption {
 
             //create text area
             var contentAngle = startDeg + offsetAngle + angle / 2;
-            var menuContent = this.renderMenuContent(menu, contentAngle, baseRadius, offsetRadius);
+            var menuContent = this.renderMenuContentEl(menu, contentAngle, baseRadius, offsetRadius);
 
             arcG.appendChild(p);
             arcG.appendChild(menuContent);
@@ -168,6 +168,7 @@ class AnnularMenu implements AnnularMenuOption {
             if (util.isFunction(menu.callback)) {
                 menu.callback.call(undefined, arcG);
             }
+            arcG._parent = pg;
             pg.appendChild(arcG);
 
             offsetAngle += angle + menu.angleStep;
@@ -184,7 +185,7 @@ class AnnularMenu implements AnnularMenuOption {
 
         var rootEl = this._renderRootEl(),
             contentEl = this._renderContentEl(),
-            menuCenter = this._renderMenuCenter();
+            menuCenter = this._renderCenterEl();
 
         contentEl.appendChild(menuCenter);
         rootEl.appendChild(contentEl);
@@ -203,8 +204,9 @@ class AnnularMenu implements AnnularMenuOption {
         }
 
         menuList.angle = menuList.angle || 2 * Math.PI / menus.length;
-        this._initMenusData(menuList);
-        var pg = this.renderMenus(this.menuList);
+        this._initMenuListData(menuList);
+        var pg = this.renderMenuList(this.menuList);
+        util.addClass(pg,classNames.menuItemsRoot)
         util.preAppend(contentEl, pg);
 
         this.bindEvent();
@@ -212,7 +214,7 @@ class AnnularMenu implements AnnularMenuOption {
         return this.element;
 
     }
-    private _initMenusData(menuList:MenuList){
+    private _initMenuListData(menuList:MenuList){
         var totalAngle = 0;
         var angle = util.isNumber(menuList.angle) ? menuList.angle : defaultConstant.arcAngle;
         var angleStep = util.isNumber(menuList.angleStep) ? menuList.angleStep : defaultConstant.angleStep;
@@ -448,13 +450,13 @@ class AnnularMenu implements AnnularMenuOption {
         }
     }
 
-    private getMenuElPath(target:HTMLElement) {
+    private getMenuPathEls(target:HTMLElement) {
         var pathElements = [];
         while (target && target !== this.element) {
             if (target.__menuData__) {
                 pathElements.unshift(target);
             }
-            target = util.parent(target)
+            target = target._parent;
         }
         return pathElements;
     }
@@ -471,20 +473,24 @@ class AnnularMenu implements AnnularMenuOption {
         return '.' + className;
     }
 
-    getAllMenuElPaths() {
+    getAllMenuEls() {
         var selector = this._selector(classNames.menuPathGroup);
         var slice = Array.prototype.slice;
         return slice.call(this.element.querySelectorAll(selector));
     }
 
     private collapseAllSubMenus() {
-        this.getAllMenuElPaths().forEach((el) => {
-            util.toggleVisible(el, false);
+        this.getAllMenuEls().forEach((el) => {
+            this.toggleMenuElVisible(el,false);
         });
     }
+    private toggleMenuElVisible(el:HTMLElement,visible?:boolean){
+        util.toggleVisible(el,visible);
+        el._child && util.toggleVisible(el._child, visible);
+    }
     private unSelectAllMenus(){
-        this.getAllMenuElPaths().forEach((el) => {
-            util.toggleSelect(el, false);
+        this.getAllMenuEls().forEach((el) => {
+             util.toggleSelect(el, false);
         });
     }
     private selectMenuEl(target:HTMLElement){
@@ -492,7 +498,7 @@ class AnnularMenu implements AnnularMenuOption {
             return;
         }
         this.unSelectAllMenus();
-        var pathElements = this.getMenuElPath(target);
+        var pathElements = this.getMenuPathEls(target);
         pathElements.forEach((el) => {
             util.toggleSelect(el, true);
         });
@@ -507,31 +513,31 @@ class AnnularMenu implements AnnularMenuOption {
             return;
         }
 
-        var pathElements = this.getMenuElPath(target);
-        pathElements.forEach((el) => {
-            util.toggleVisible(el, true);
-        });
-
-        var menusElSelector = this._selector(classNames.menuItems);
-        var menuGroupEl:HTMLElement = <HTMLElement>target.querySelector(menusElSelector);
+        var menuGroupEl:HTMLElement = target._child;
         if (!menuGroupEl) {
             let menuData = <MenuData>target.__menuData__;
             let currentMenu = menuData.menu;
             let menuList = currentMenu.menuList;
             let menus = menuList && menuList.items;
-            if (!menus || menus.length === 0) {
-                return;
+            if (menus && menus.length > 0) {
+                this._initMenuListData(menuList);
+
+                let totalAngle = menuList.__data__.totalAngle;
+
+                var startAngle = menuData.offsetAngle - (totalAngle - currentMenu.angle) / 2;
+
+                menuGroupEl = this.renderMenuList(currentMenu.menuList, startAngle, menuData.radius);
+                target._child = menuGroupEl;
+                menuGroupEl._parent = target;
+                util.preAppend(this.contentEl, menuGroupEl);
             }
 
-            this._initMenusData(menuList);
-
-            let totalAngle = menuList.__data__.totalAngle;
-
-            var startAngle = menuData.offsetAngle - (totalAngle - currentMenu.angle) / 2;
-
-            menuGroupEl = this.renderMenus(currentMenu.menuList, startAngle, menuData.radius);
-            util.preAppend(target, menuGroupEl);
         }
+
+        var pathElements = this.getMenuPathEls(target);
+        pathElements.forEach((el) => {
+            this.toggleMenuElVisible(el,true);
+        });
 
     }
 }

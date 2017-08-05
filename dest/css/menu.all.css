@@ -36,8 +36,10 @@
       fill: #b3a5a5; }
   .here-ui-annular-menu .menu-items {
     display: none; }
-  .here-ui-annular-menu .menu-position > .menu-items {
-    display: block !important; }
+    .here-ui-annular-menu .menu-items.active {
+      display: block; }
+    .here-ui-annular-menu .menu-items.menu-items-root {
+      display: block; }
   .here-ui-annular-menu .menu-position.collapse > .menu-items {
     transform: scale(0);
     -webkit-transform: scale(0);
@@ -46,8 +48,6 @@
     -o-transform: scale(0); }
   .here-ui-annular-menu .menu-path-g.active > .menu-path {
     fill: #37483d; }
-  .here-ui-annular-menu .menu-path-g.active > .menu-items {
-    display: block; }
   .here-ui-annular-menu .menu-path-g.selected > .menu-path {
     fill: #88969f; }
   .here-ui-annular-menu .menu-path {
@@ -81,69 +81,69 @@
     text-overflow: ellipsis; }
 @keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-webkit-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-moz-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-ms-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-o-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @keyframes menu-center-enter {
   0% {
     transform: scale(0.2);
@@ -239,7 +239,7 @@
     -o-transform: scale(1);
     opacity: 1;
     color: initial; } }
-  .here-ui-annular-menu .here-ui-annular-menu .menu-position[collapse] > .menu-items, .here-ui-annular-menu .here-ui-annular-menu .menu-position.collapse > .menu-items {
+  .here-ui-annular-menu .here-ui-annular-menu .menu-position.collapse > .menu-items {
     animation: collapse-enter 0.4s;
     -webkit-animation: collapse-enter 0.4s;
     -moz-animation: collapse-enter 0.4s;
@@ -356,7 +356,7 @@
     -o-transform: scale(1);
     opacity: 1;
     color: initial; } }
-  .here-ui-annular-menu .here-ui-annular-menu .menu-path-g[active] > .menu-items, .here-ui-annular-menu .here-ui-annular-menu .menu-path-g.active > .menu-items {
+  .here-ui-annular-menu .here-ui-annular-menu .menu-items.active {
     animation: menu-items-enter 0.4s;
     -webkit-animation: menu-items-enter 0.4s;
     -moz-animation: menu-items-enter 0.4s;
@@ -367,69 +367,69 @@
 
 @keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-webkit-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-moz-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-ms-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @-o-keyframes collapse-enter {
   from {
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -ms-transform: scale(1);
-    -o-transform: scale(1); }
+    transform: scale(1) rotate(90deg);
+    -webkit-transform: scale(1) rotate(90deg);
+    -moz-transform: scale(1) rotate(90deg);
+    -ms-transform: scale(1) rotate(90deg);
+    -o-transform: scale(1) rotate(90deg); }
   to {
-    transform: scale(0);
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0); } }
+    transform: scale(0) rotate(0deg);
+    -webkit-transform: scale(0) rotate(0deg);
+    -moz-transform: scale(0) rotate(0deg);
+    -ms-transform: scale(0) rotate(0deg);
+    -o-transform: scale(0) rotate(0deg); } }
 @keyframes menu-center-enter {
   0% {
     transform: scale(0.2);
@@ -525,7 +525,7 @@
     -o-transform: scale(1);
     opacity: 1;
     color: initial; } }
-.here-ui-annular-menu .menu-position[collapse] > .menu-items, .here-ui-annular-menu .menu-position.collapse > .menu-items {
+.here-ui-annular-menu .menu-position.collapse > .menu-items {
   animation: collapse-enter 0.4s;
   -webkit-animation: collapse-enter 0.4s;
   -moz-animation: collapse-enter 0.4s;
@@ -642,7 +642,7 @@
     -o-transform: scale(1);
     opacity: 1;
     color: initial; } }
-.here-ui-annular-menu .menu-path-g[active] > .menu-items, .here-ui-annular-menu .menu-path-g.active > .menu-items {
+.here-ui-annular-menu .menu-items.active {
   animation: menu-items-enter 0.4s;
   -webkit-animation: menu-items-enter 0.4s;
   -moz-animation: menu-items-enter 0.4s;

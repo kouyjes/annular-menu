@@ -5,6 +5,8 @@ declare interface MenuData{
 }
 declare interface HTMLElement extends Node{
     src:String;
+    _parent:HTMLElement;
+    _child:HTMLElement;
     moved:boolean;
     addEventListener:Function;
     __menuData__:Object;

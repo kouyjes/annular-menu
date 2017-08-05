@@ -35,11 +35,14 @@
   }
   .menu-items{
     display:none;
+    &.active{
+      display:block;
+    }
+    &.menu-items-root{
+      display:block;
+    }
   }
   .menu-position{
-    >.menu-items{
-      display:block !important;
-    }
     &.collapse{
       >.menu-items{
         @include css(transform,scale(0));
@@ -51,9 +54,6 @@
     &.active{
       >.menu-path{
         fill:$menuBgColor_hover;
-      }
-      >.menu-items{
-        display:block;
       }
     }
     &.selected{
