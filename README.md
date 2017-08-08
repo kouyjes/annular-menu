@@ -1,7 +1,7 @@
 # menus
 ## Demo
-- [Demo1 url](http://htmlpreview.github.io/?https://github.com/kouyjes/annular-menu/blob/master/example/index.html)
-- [Demo2 url](http://htmlpreview.github.io/?https://github.com/kouyjes/annular-menu/blob/master/example/index-default.html)
+- [Demo1 url](https://kouyjes.github.io/annular-menu/example/index.html)
+- [Demo2 url](https://kouyjes.github.io/annular-menu/example/index-default.html)
 ![](./screenshot/menu_01.png)
 ![](./screenshot/menu_02.png)
 ## Getting Started
